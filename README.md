@@ -2,7 +2,7 @@
 
 > 原始项目：[AI_NovelGenerator](https://github.com/YILING0013/AI_NovelGenerator)
 
-分别使用 antigravity（gemini3.1 pro）和codex（gpt 5.5）蒸馏原始项目生成
+使用 codex（gpt 5.5）蒸馏原始项目生成
 
 
 
