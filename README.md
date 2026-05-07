@@ -12,7 +12,7 @@
 把下面这句话粘贴给 OpenClaw / 支持 OpenClaw Skills 的 agent：
 
 ```text
-Install this skill: https://github.com/<your-name>/<your-repo>
+Install this skill: https://github.com/jiaw-Zh/long-novel-writer
 ```
 
 ## Claude Code 安装
@@ -20,7 +20,7 @@ Install this skill: https://github.com/<your-name>/<your-repo>
 把下面这句话粘贴给 Claude Code：
 
 ```text
-Install this Agent Skill from GitHub as a personal Claude Code skill: https://github.com/<your-name>/<your-repo>
+Install this Agent Skill from GitHub as a personal Claude Code skill: https://github.com/jiaw-Zh/long-novel-writer
 ```
 
 ## Codex 安装
@@ -28,5 +28,5 @@ Install this Agent Skill from GitHub as a personal Claude Code skill: https://gi
 把下面这句话粘贴给 Codex：
 
 ```text
-Use $skill-installer to install this skill from GitHub: https://github.com/<your-name>/<your-repo>
+Use $skill-installer to install this skill from GitHub: https://github.com/jiaw-Zh/long-novel-writer
 ```
