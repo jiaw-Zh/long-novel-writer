@@ -57,7 +57,5 @@
 
 输出时把材料分为：情节燃料、人物维度、世界碎片、叙事技法、冲突预警。
 
-## 格式修复
 
-当结构化输出不符合 JSON/schema 时，参考 dev 分支 `dev-format_review_service.py` 中的格式审校 prompt：只提取有效信息，严格按目标 schema 输出合法 JSON，不输出额外内容。
 

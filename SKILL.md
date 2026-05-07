@@ -1,6 +1,6 @@
 ---
 name: long-novel-writer
-description: Chinese long-form fiction writing workflow for million-to-ten-million-word novels. Use when Codex needs to plan, create, continue, revise, or maintain a very long web novel or serial fiction project, especially tasks involving story architecture, volume planning, chapter drafting, character/state memory, worldbuilding consistency, prompt selection, or external retrieval/RAG-supported continuity.
+description: 当用户需要写长篇小说、扩展小说创意、构建小说架构、生成正文章节或进行章节定稿更新时使用。此技能提供了一套完整的五阶段工作流，通过外部文档驱动状态机的方式，保障百万/千万级别小说的连贯性。
 ---
 
 # 长篇小说写作器
