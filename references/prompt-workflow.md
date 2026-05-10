@@ -28,25 +28,32 @@
 
 第一章使用 `first_chapter_draft_prompt`。后续章节使用 `next_chapter_draft_prompt`。
 
-写前补齐输入：
+写前严格按 `references/memory-protocol.md` 第三节「写前组装协议」加载上下文。对应到提示词槽位：
 
-- 前文摘要
-- 前章结尾段
-- 用户指导
-- 角色状态
-- 当前章节摘要
-- 当前章节信息
-- 下一章目录
-- 检索或知识库参考
+- `global_summary` ← `summaries/global.md`（L5）+ 当前 `volumes/volume-NNN.md`（L4）+ 当前 `arcs/arc-NNN.md`（L3）
+- `previous_chapter_excerpt` ← 上一章结尾 500-1000 字原文
+- `user_guidance` ← 用户本轮指导
+- `character_state` ← 出场角色 `entities/characters/<slug>.md` 的「当前状态」段聚合
+- `short_summary` ← 最近 3-5 章 `chapter-*.brief.md`（L1）
+- 当前章节信息 ← 当前章 blueprint
+- `next_chapter_*` ← 下一章 blueprint
+- `filtered_context` ← `chapter-*.index.md` 关键词反查到的相关章节 L1 + 活跃伏笔 + `continuity-issues.md` 禁用桥段
 
 ## 更新记忆
 
-章节完成后使用：
+**章节完成后**（单章级，每章都做）：
 
-- `summary_prompt` 更新前文摘要。
-- `update_character_state_prompt` 更新角色状态。
-- `summarize_recent_chapters_prompt` 生成当前章节摘要。
-- `CONSISTENCY_PROMPT` 做冲突检查。
+- `summarize_recent_chapters_prompt` → 生成 L1 brief，落盘到 `chapter-NNNN.brief.md` 后**冻结**。
+- `update_character_state_prompt` → 输出改写入对应 `entities/characters/<slug>.md` 的「当前状态」段，并强制另行追加一条「变更记录」到文件末尾，不覆盖旧事实。
+- 手动维护 `chapter-NNNN.index.md`（YAML 字段见 file-contract）与 `foreshadowing-ledger.md` 状态。
+- 写后校验：按 `memory-protocol.md` §4 的自检清单逐项检查（若 prompt 库中存在 `CONSISTENCY_PROMPT` 则直接调用，否则将清单内联到自检任务提示）。
+
+**chunk/arc/volume 末章额外执行**：
+
+- `summary_prompt` 的输入从"章节正文 + 旧摘要"改为"该 chunk/arc/volume 下层摘要的拼接"，输出分别落盘到 `chunks/chunk-NNNN.md` / `arcs/arc-NNN.md` / `volumes/volume-NNN.md`，落盘后冻结。
+- 卷末额外运行一次聚合，把所有 L4 拼成新的 `summaries/global.md`（L5），旧版归档到文件「历史版本」段。
+
+**禁止用 `summary_prompt` 做逐章覆盖式的全局摘要更新**——这是旧协议下的主要漂移源。
 
 ## 知识库和检索
 
