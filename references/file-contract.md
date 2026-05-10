@@ -130,6 +130,8 @@ pov: "zhang-san"
 characters: [zhang-san, li-si, wang-er]
 entities: [hantie-sword, yunxiao-sect]
 plot_beats: [主线-A3, 副线-B1]
+scene_types: [action, dialogue]
+emotional_tone: {tension: 8, despair: 2, hope: 3}
 foreshadowing_set: [F045]
 foreshadowing_paid: [F012]
 new_facts: [FACT-0891, FACT-0892]
@@ -138,6 +140,10 @@ keywords: [寒铁剑, 血祭, 西市刺杀]
 ```
 
 用于按实体/伏笔/关键词反查章节。写完正文即生成，后续不改。
+
+`scene_types` 可选值：`action`（打斗/追逐）、`dialogue`（对话/谈判）、`introspection`（内心独白/回忆）、`exposition`（世界观/信息交代）、`transition`（过场/行路）。一章可多个。
+
+`emotional_tone` 三个维度各 1-10 打分：`tension`（紧张度）、`despair`（绝望/压抑）、`hope`（希望/上扬）。用于写前检查最近 10 章的情感曲线，避免连续同类场景或情感单调。
 
 ### `entities/characters/<slug>.md`
 
