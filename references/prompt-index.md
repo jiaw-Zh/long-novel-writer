@@ -1,5 +1,12 @@
 # 提示词索引
 
+## 写后校验提示词
+
+文件：`references/prompts/consistency-check-prompt.md`
+
+用于章节落盘前的独立一致性校验，建议由独立 subagent 或新对话窗口执行。
+覆盖 6 项校验：正典冲突 / POV 知识边界 / 硬约束 / 进阶合法性 / 命名一致性 / 桥段重复+伏笔对齐。
+
 ## 旧分支中文提示词
 
 文件：`references/prompts/legacy-zh-prompt_definitions.py`
