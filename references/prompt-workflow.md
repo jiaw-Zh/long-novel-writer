@@ -44,12 +44,13 @@
 **章节完成后**（单章级，每章都做，按此顺序）：
 
 1. `summarize_recent_chapters_prompt` → 生成 L1 brief，落盘到 `chapter-NNNN.brief.md` 后**冻结**。
-2. 追加 `canon/facts.jsonl`：本章新增的约束性事实（能力上限、物品归属、人物死亡、关键承诺、地理距离、时间节点）。
-3. 追加 `canon/timeline.md`：本章时间线事件。
-4. 追加/更新 `canon/rules.md`：本章确立或违反的世界规则。
-5. `update_character_state_prompt` → 输出改写入对应 `entities/characters/<slug>.md` 的「当前状态」段，并强制另行追加一条「变更记录」到文件末尾，变更记录中引用步骤 2 登记的 FACT ID。
-6. 维护 `chapter-NNNN.index.md`（YAML 字段见 file-contract）与 `foreshadowing-ledger.md` 状态。
-7. 写后校验：按 `memory-protocol.md` §5 的 4 项清单检查（正典冲突 / 硬约束 / 桥段重复 / 伏笔对齐）。若 prompt 库中存在 `CONSISTENCY_PROMPT` 则直接调用，否则将清单内联到自检任务提示。
+2. 追加 `canon/facts.jsonl`：本章新增约束性事实（含 `known_by` 字段）。
+3. 追加 `canon/promises.jsonl`：本章新增或状态变化的承诺/誓言。
+4. 追加 `canon/progression.jsonl`：本章发生的境界/能力进阶。
+5. 追加 `canon/timeline.md` 与 `canon/rules.md`。
+6. `update_character_state_prompt` → 更新实体档案「当前状态」（含「最后出场」「已知秘密」字段），追加「变更记录」引用 FACT ID。
+7. 维护 `chapter-NNNN.index.md`、`foreshadowing-ledger.md`、`subplots.md`。
+8. 写后校验：按 `memory-protocol.md` §5 的 6 项清单检查（正典冲突 / POV 知识边界 / 硬约束 / 进阶合法性 / 命名一致性 / 桥段重复+伏笔对齐）。
 
 **chunk/arc/volume 末章额外执行**：
 

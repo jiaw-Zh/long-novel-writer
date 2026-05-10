@@ -27,8 +27,8 @@
 - `summaries/global.md`（L5）与各层 L2/L3/L4 摘要目录
 - `chapters/volume-NNN/chapter-NNNN.md` + `.brief.md` + `.index.md`
 - `entities/{characters,locations,items,organizations,systems}/`
-- `canon/facts.jsonl`、`canon/rules.md`、`canon/timeline.md`
-- `foreshadowing-ledger.md`
+- `canon/facts.jsonl`（含 `known_by` POV 知识边界）、`canon/promises.jsonl`、`canon/progression.jsonl`、`canon/rules.md`、`canon/timeline.md`
+- `naming.md`、`subplots.md`、`foreshadowing-ledger.md`
 
 不要把"没有本地向量库"理解为不需要长期记忆。纯文件 + 章节索引 + 实体档案已能支撑千万字级检索；外部 RAG 或知识库可作为第 9 步检索的替代实现。
 

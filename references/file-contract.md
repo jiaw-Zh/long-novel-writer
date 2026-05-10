@@ -38,6 +38,10 @@ novel-title/
     facts.jsonl                     # 原子事实账本（只追加）
     rules.md                        # 世界规则（追加式，冲突高亮）
     timeline.md                     # 时间线事件（按 Day 编号追加）
+    promises.jsonl                  # 承诺/誓言/宣言账本（只追加）
+    progression.jsonl               # 能力/境界进阶轨迹（只追加）
+
+  naming.md                         # 标准名称表（规范写法 + 禁用变体）
 
   foreshadowing-ledger.md           # 伏笔账本（含原文引用）
 ```
@@ -162,6 +166,8 @@ keywords: [寒铁剑, 血祭, 西市刺杀]
 - 心理状态：
 - 关系网：
   - 李四：竞争对手
+- 最后出场：第 78 章
+- 已知秘密：FACT-0089（李四是天魔教奸细）
   - 王二：旧怨
 
 ## 变更记录
@@ -198,6 +204,12 @@ keywords: [寒铁剑, 血祭, 西市刺杀]
 - `fact`：一句话断言，≤100 字
 - `source`：原文引用片段（10-50 字），防止回收时模型合理化杜撰
 - `type`：默认省略；撤销条目填 `"retraction"`
+- `known_by`：知道这条事实的角色 slug 列表（留空表示公开信息）；新角色得知时追加一条 `type:"disclosure"` 条目
+
+```jsonl
+{"id":"FACT-0089","chapter":45,"entity":["li-si"],"fact":"李四是天魔教奸细","source":"他撕开衣领，露出天魔教的刺青","known_by":["zhang-san"]}
+{"id":"FACT-0089-D","chapter":78,"type":"disclosure","fact_id":"FACT-0089","to":"wang-er","chapter":78,"source":"张三将秘密告知了王二"}
+```
 
 只登记**可能在后续章节被违反的约束性事实**：能力上限、物品归属、人物死亡、关键承诺、地理距离、时间节点。不需要登记所有细节。
 
@@ -223,6 +235,52 @@ keywords: [寒铁剑, 血祭, 西市刺杀]
 - Day 890：云霄峰决裂，李四离队（第45章）
 ```
 
+### `canon/promises.jsonl`
+
+角色亲口说出的承诺、誓言、宣言，只追加不修改：
+
+```jsonl
+{"id":"PROMISE-0012","chapter":20,"by":"zhang-san","to":"li-si","content":"三年内必取天魔殿殿主首级","deadline_day":1500,"status":"pending"}
+{"id":"PROMISE-0012-U","chapter":180,"type":"update","promise_id":"PROMISE-0012","status":"fulfilled","source":"他终于站在了殿主的尸身旁"}
+```
+
+字段说明：
+- `deadline_day`：承诺的故事日截止点（可选），用于写前提示「即将到期」
+- `status`：`pending` / `fulfilled` / `broken` / `abandoned`
+- 状态变化追加 `type:"update"` 条目，不修改原条目
+
+写前组装协议加载「距本章故事时间 ±200 天内到期、且 status=pending 的承诺」。
+
+### `canon/progression.jsonl`
+
+能力/境界/等级的进阶轨迹，只追加不修改：
+
+```jsonl
+{"id":"PROG-0001","chapter":1,"entity":"zhang-san","system":"灵气修炼","level":"炼气一层","value":1}
+{"id":"PROG-0012","chapter":45,"entity":"zhang-san","system":"灵气修炼","level":"炼气六层","value":6}
+{"id":"PROG-0031","chapter":120,"entity":"zhang-san","system":"灵气修炼","level":"筑基期","value":10}
+```
+
+字段说明：
+- `system`：所属进阶体系（同一作品可有多套体系）
+- `value`：数值化的等级（用于校验单调性：新值必须 ≥ 旧值）
+- 写后校验时检查：新登记的 `value` 是否低于该实体在同一 `system` 下的历史最高值
+
+### `naming.md`
+
+标准名称表，防止同一实体前后写法不一致：
+
+```markdown
+# 标准名称表
+| 实体 slug | 规范写法 | 禁用变体 |
+| --- | --- | --- |
+| zhang-san | 张三 | 张三儿、张小三 |
+| hantie-sword | 寒铁剑 | 玄铁剑、黑铁剑、寒铁长剑 |
+| yunxiao-sect | 云霄宗 | 云霄派、云霄门 |
+```
+
+写后校验新增一步：grep 本章正文，扫到「禁用变体」列中的词直接报错。立项时建表，每次新实体首次登场时补充。
+
 ### `continuity-issues.md`
 
 ```markdown
@@ -237,3 +295,17 @@ keywords: [寒铁剑, 血祭, 西市刺杀]
 ## 已修复
 - [x] ...
 ```
+
+### `subplots.md`
+
+追踪所有副线与次要角色线，防止配角失踪：
+
+```markdown
+# 副线追踪
+| ID | 副线 | 涉及角色 | 当前状态 | 最后推进章节 | 预计回收 |
+| --- | --- | --- | --- | --- | --- |
+| SUB-001 | 李四卧底线 | li-si | 身份尚未暴露 | 第45章 | 卷二中段 |
+| SUB-002 | 王二复仇线 | wang-er | 已找到仇人线索 | 第62章 | 卷三 |
+```
+
+写前组装协议加载「距上次推进超过 20 章的活跃副线」，提示 agent 是否需要在本章推进。
