@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+# lnw — long-novel-writer CLI
+# 依赖：jq（处理 jsonl），yq v4+（处理 YAML frontmatter）
+# 用法：lnw <command> [args]
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LIB="$SCRIPT_DIR/lib"
+
+# 自动定位小说根目录（向上查找 metadata.md）
+find_novel_root() {
+  local dir="$PWD"
+  while [[ "$dir" != "/" ]]; do
+    [[ -f "$dir/metadata.md" ]] && echo "$dir" && return
+    dir="$(dirname "$dir")"
+  done
+  echo "错误：找不到 metadata.md，请在小说目录内运行" >&2
+  exit 1
+}
+
+NOVEL_ROOT="$(find_novel_root)"
+cd "$NOVEL_ROOT"
+
+CMD="${1:-help}"
+shift || true
+
+case "$CMD" in
+  next-id)        source "$LIB/ids.sh";      cmd_next_id "$@" ;;
+  filter-facts)   source "$LIB/filter.sh";   cmd_filter_facts "$@" ;;
+  check-naming)   source "$LIB/check.sh";    cmd_check_naming "$@" ;;
+  check-progression) source "$LIB/check.sh"; cmd_check_progression "$@" ;;
+  last-seen)      source "$LIB/filter.sh";   cmd_last_seen "$@" ;;
+  stale-subplots) source "$LIB/filter.sh";   cmd_stale_subplots "$@" ;;
+  snapshot)       source "$LIB/snapshot.sh"; cmd_snapshot "$@" ;;
+  assemble-context) source "$LIB/assemble.sh"; cmd_assemble_context "$@" ;;
+  help|--help|-h)
+    cat <<'EOF'
+lnw — long-novel-writer CLI
+
+用法：lnw <command> [args]
+
+ID 分配：
+  next-id <fact|promise|prog|foreshadowing>   分配下一个 ID
+
+查询：
+  filter-facts <slug1,slug2,...>              过滤相关实体的 facts
+  last-seen <slug>                            角色最后出场章节
+  stale-subplots [--threshold N]             超过 N 章（默认20）未推进的副线
+
+校验（纯机械，零 LLM）：
+  check-naming <chapter_num>                 检查禁用变体
+  check-progression <chapter_num>            检查境界/能力单调性
+
+组装：
+  assemble-context <chapter_num>             拼接写前上下文（9段）到 stdout
+
+归档：
+  snapshot <chapter_num> [--note "备注"]     创建记忆层快照
+EOF
+    ;;
+  *)
+    echo "未知命令：$CMD，运行 lnw help 查看帮助" >&2
+    exit 1
+    ;;
+esac
