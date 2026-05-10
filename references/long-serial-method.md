@@ -16,7 +16,8 @@
 
 - L0–L5 分层摘要与冻结规则（防止覆盖式摘要稀释早期细节）。
 - 实体中心档案（角色/地点/道具/组织/力量体系各自建档、按需加载）。
-- 写前组装协议与写后校验闭环。
+- 正典账本（`canon/facts.jsonl` + `rules.md` + `timeline.md`，只追加不修改，支持机器级冲突检测）。
+- 写前组装协议（9 步固定流程）与写后校验闭环（4 项校验 + 10 步落盘顺序）。
 
 **文件布局、字段定义见 `references/file-contract.md`。**
 
@@ -26,6 +27,7 @@
 - `summaries/global.md`（L5）与各层 L2/L3/L4 摘要目录
 - `chapters/volume-NNN/chapter-NNNN.md` + `.brief.md` + `.index.md`
 - `entities/{characters,locations,items,organizations,systems}/`
+- `canon/facts.jsonl`、`canon/rules.md`、`canon/timeline.md`
 - `foreshadowing-ledger.md`
 
 不要把"没有本地向量库"理解为不需要长期记忆。纯文件 + 章节索引 + 实体档案已能支撑千万字级检索；外部 RAG 或知识库可作为第 9 步检索的替代实现。
@@ -48,9 +50,10 @@
 - 当前冲突是否推进了卷目标。
 - 是否重复最近 20 章用过的桥段（对照 `chapter-*.index.md`→`plot_beats`）。
 
-写正文后按 memory-protocol 第四节的落盘顺序更新：
+写正文后按 memory-protocol §5 的落盘顺序更新：
 
 - L0/L1/索引优先落盘。
+- canon 账本（facts/timeline/rules）在实体档案之前追加。
 - 实体档案追加「关键节点」与「变更记录」，不覆盖旧事实。
 - 伏笔账本更新状态。
 - 到达 chunk/arc/volume 末章时生成对应 L2/L3/L4。
