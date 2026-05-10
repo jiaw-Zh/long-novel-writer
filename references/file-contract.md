@@ -37,6 +37,17 @@ novel-title/
   dialogue-samples/
     <slug>.md                       # 每个主要角色一份，滚动保留最近5条台词样本
 
+  snapshots/
+    ch-0050/                        # 第50章落盘后的记忆层快照
+      entities/
+      canon/
+      summaries/
+      dialogue-samples/
+      foreshadowing-ledger.md
+      subplots.md
+      naming.md
+      snapshot-meta.md              # 快照元信息
+
   canon/
     facts.jsonl                     # 原子事实账本（只追加）
     rules.md                        # 世界规则（追加式，冲突高亮）
@@ -341,3 +352,28 @@ keywords: [寒铁剑, 血祭, 西市刺杀]
 ```
 
 写对话前加载本章出场角色的台词样本，作为语气/节奏参考，不作为硬约束。
+
+### `snapshots/ch-NNNN/snapshot-meta.md`
+
+```markdown
+# 快照元信息
+- 触发章节：第 50 章
+- 快照时间：2026-05-10
+- 故事日：Day 890
+- 当前卷：卷一
+- 备注：卷一收尾，李四决裂后
+```
+
+快照只复制记忆层，不复制正文（正文体量大且有 git 历史可追溯）：
+
+```
+snapshots/ch-0050/
+  entities/           ← cp -r entities/
+  canon/              ← cp -r canon/
+  summaries/          ← cp -r summaries/
+  dialogue-samples/   ← cp -r dialogue-samples/
+  foreshadowing-ledger.md
+  subplots.md
+  naming.md
+  snapshot-meta.md
+```

@@ -185,3 +185,38 @@ canon 账本不进写前上下文，只在写后校验时按 entity 过滤后载
 
 - 已有作品若按旧扁平结构写了一部分：保留旧文件不动，从下一个 chunk 起按本协议建 `entities/` / `chapters/*/brief` / `*.index.md` / `canon/`，L5 在下次卷收尾时统一重生成。
 - 作品不到 30 章时可以简化：L2/L3/L4 合并为单一「阶段摘要」，实体档案合并为一份 `characters.md`，但 **L1 冻结、章节索引、canon 账本仍要维护**。
+
+
+## 九、记忆快照与分叉写作
+
+### 快照触发时机
+
+每 50 章落盘后，或每个卷收尾后（取先到者），对记忆层做一次快照。
+
+### 快照内容
+
+只复制记忆层，不复制正文（正文体量大，git 历史可追溯）：
+
+```bash
+SNAP=snapshots/ch-$(printf "%04d" $CHAPTER)
+mkdir -p $SNAP
+cp -r entities canon summaries dialogue-samples $SNAP/
+cp foreshadowing-ledger.md subplots.md naming.md $SNAP/
+```
+
+同时在 `$SNAP/snapshot-meta.md` 记录触发章节、故事日、当前卷、备注。
+
+### 回滚
+
+出现严重设定冲突需要回退时，把目标快照的各目录/文件覆盖回作品根目录，然后从对应章节重新续写。正文回退走 git（`git checkout ch-NNNN -- chapters/`）。
+
+### 分叉写作
+
+想探索"如果当时选了另一条路"：
+
+1. 新建目录 `novel-title-branch-A/`
+2. 把目标快照复制进去作为记忆层起点
+3. 把分叉点之前的正文章节也复制过去
+4. 在新目录里独立续写，两条线互不干扰
+
+分叉目录是完全独立的作品目录，本协议的所有规则同样适用。
