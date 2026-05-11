@@ -1,6 +1,28 @@
 # 提示词工作流
 
-## 从一句创意开始
+## 体裁模式
+
+`metadata.md` 的 `体裁模式` 字段决定提示词的写作约束分支：
+
+| 体裁模式 | 适用场景 | 写作约束常量 |
+|---|---|---|
+| `网文` | 爽文/修真/都市/系统流 | `GENRE_MODE_WEBNOVEL`、`GENRE_RHYTHM_WEBNOVEL` 等 |
+| `严肃文学` | 纯文学/深度叙事 | `GENRE_MODE_LITERARY`、`GENRE_RHYTHM_LITERARY` 等 |
+| `通用` | 不确定时默认 | 两套规则各取一半 |
+
+所有 v2 提示词的 `{genre_mode_instructions}` / `{genre_rhythm_rules}` / `{genre_constraints}` 槽位，根据 `metadata.md` 的体裁模式填入对应常量。
+
+## 网文专用提示词使用时机
+
+| 提示词 | 使用时机 |
+|---|---|
+| `opening_three_chapters_prompt` | 立项后，写第1-3章之前，生成开局大纲 |
+| `golden_finger_design_prompt` | 立项时，与角色/世界观设定同步完成 |
+| `chapter_hook_prompt` | 每章正文写完后，检查/优化章末钩子 |
+| `face_slap_prompt` | blueprint 中标注「打脸章」时，正文生成前调用 |
+| `progression_breakthrough_prompt` | blueprint 中标注「突破章」时，正文生成前调用 |
+
+
 
 使用 dev 分支 `dev-prompt_default.yaml`：
 
