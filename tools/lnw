@@ -37,6 +37,8 @@ case "$CMD" in
   help|--help|-h)
     cat <<'EOF'
 lnw — long-novel-writer CLI
+本文件位于 SKILL 安装目录的 tools/lnw，使用绝对路径或 $LNW 变量调用。
+在小说目录（含 metadata.md）内或其子目录执行，工具自动定位小说根目录。
 
 用法：lnw <command> [args]
 
