@@ -669,3 +669,255 @@ enrich_prompt = """\
 原内容：
 {chapter_text}
 """
+
+# =============================================================================
+# 以下为对齐新记忆系统的升级版提示词（v2）
+# 旧版提示词保留在上方，标注 [deprecated] 仅供参考
+# =============================================================================
+
+# =============== A. next_chapter_draft_prompt v2 ===================
+# 变更：
+# - global_summary 拆为 layered_summary（L5+L4+L3 分层摘要）
+# - character_state 拆为 entity_states（实体档案当前状态）+
+#                        known_facts（出场角色已知秘密）+
+#                        dialogue_samples（台词样本）
+# - filtered_context 明确来源：index.md 关键词检索 + 活跃伏笔 + 禁用桥段
+
+next_chapter_draft_prompt_v2 = """\
+参考文档：
+
+└── 分层摘要（L5全书→L4当前卷→L3当前篇章）：
+{layered_summary}
+
+└── 前章结尾段（原文，约800字）：
+{previous_chapter_excerpt}
+
+└── 用户指导：
+{user_guidance}
+
+└── 出场实体当前状态（entities/ 档案摘录）：
+{entity_states}
+
+└── 出场角色已知秘密（canon/facts.jsonl known_by 过滤）：
+{known_facts}
+
+└── 台词样本（dialogue-samples/ 最近5条，语气参考非硬约束）：
+{dialogue_samples}
+
+└── 当前章节 L1 摘要（short_summary）：
+{short_summary}
+
+当前章节信息：
+第{novel_number}章《{chapter_title}》：
+├── 章节定位：{chapter_role}
+├── 核心作用：{chapter_purpose}
+├── 悬念密度：{suspense_level}
+├── 伏笔设计：{foreshadowing}
+├── 转折程度：{plot_twist_level}
+├── 章节简述：{chapter_summary}
+├── 字数要求：{word_number}字
+├── 核心人物：{characters_involved}
+├── 关键道具：{key_items}
+├── 场景地点：{scene_location}
+└── 时间压力：{time_constraint}
+
+下一章节目录：
+第{next_chapter_number}章《{next_chapter_title}》：
+├── 章节定位：{next_chapter_role}
+├── 核心作用：{next_chapter_purpose}
+├── 悬念密度：{next_chapter_suspense_level}
+├── 伏笔设计：{next_chapter_foreshadowing}
+├── 转折程度：{next_chapter_plot_twist_level}
+└── 章节简述：{next_chapter_summary}
+
+检索参考（关键词命中的相关章节 L1 + 活跃伏笔 + 禁用桥段）：
+{filtered_context}
+
+⚠️ 写作约束：
+- 角色只能使用其「已知秘密」列表中的信息，不得提前知晓未获得的秘密
+- 不得违反实体档案「硬约束」段的设定
+- 不得重复 filtered_context 中标注的禁用桥段
+- 对话语气参考台词样本，但允许随角色成长自然演化
+
+依据以上所有设定，完成第 {novel_number} 章正文，字数要求 {word_number} 字。
+确保与前章结尾段衔接流畅，为下一章目录留好铺垫。
+
+格式要求：
+- 仅返回章节正文文本
+- 不使用分章节小标题
+- 不要使用 markdown 格式
+"""
+
+# =============== B. 分层摘要聚合提示词（L1→L2, L2→L3, L3→L4, L4→L5）===================
+
+# B1. L1 单章摘要（替代 summarize_recent_chapters_prompt，输出冻结）
+chapter_brief_prompt = """\
+以下是刚完成的章节正文：
+{chapter_text}
+
+章节基本信息：
+- 章节号：第 {novel_number} 章《{chapter_title}》
+- 故事日：{story_day}
+- POV：{pov}
+- 出场角色：{characters_involved}
+
+请生成本章的 L1 摘要，格式如下：
+
+# 第 {novel_number} 章 摘要
+- 时间：{story_day}
+- 地点：{scene_location}
+- POV：{pov}
+- 出场：{characters_involved}
+- 主要事件：
+  1. （事件一）
+  2. （事件二）
+  3. （事件三，如有）
+- 推进主线：（本章如何推进主线目标）
+- 埋/回收伏笔：（本章埋设或回收的伏笔，无则填「无」）
+- 新增事实 ID：（本章落盘的 FACT-XXXX，无则填「无」）
+- 章末钩子：（最后一段制造的悬念或情绪钩子）
+
+（正文叙述，300-500字，客观描述本章发生的事，不展开分析）
+
+要求：
+- 总字数 300-500 字
+- 客观叙述，不加评价
+- 生成后此文件冻结，不再修改
+仅返回摘要文本，不要解释。
+"""
+
+# B2. L2 chunk 摘要（3-5 章 L1 → chunk 摘要，输出冻结）
+chunk_summary_prompt = """\
+以下是同一个悬念单元（chunk）内 {chunk_size} 章的 L1 摘要：
+
+{l1_briefs}
+
+请生成本 chunk 的 L2 摘要，要求：
+- 总字数 ≤800 字
+- 说明本 chunk 的核心悬念、推进了哪条主线/副线、制造了什么代价
+- 列出本 chunk 内埋设/强化/回收的伏笔
+- 列出本 chunk 内角色状态的关键变化
+- 结尾说明本 chunk 留下的开放问题（为下一 chunk 铺垫）
+
+仅返回 L2 摘要文本，不要解释。生成后此文件冻结，不再修改。
+"""
+
+# B3. L3 篇章摘要（arc 内所有 L2 → 篇章摘要，输出冻结）
+arc_summary_prompt = """\
+以下是同一篇章（arc）内所有 chunk 的 L2 摘要：
+
+{l2_summaries}
+
+请生成本篇章的 L3 摘要，要求：
+- 总字数 ≤2000 字
+- 说明本篇章的目标、主要冲突升级路径、关键转折点
+- 列出本篇章内角色关系/状态的重要变化
+- 列出已回收的伏笔和遗留的伏笔
+- 说明本篇章结束时的整体局势（为下一篇章铺垫）
+
+仅返回 L3 摘要文本，不要解释。生成后此文件冻结，不再修改。
+"""
+
+# B4. L4 卷摘要（卷内所有 L3 → 卷摘要，输出冻结）
+volume_summary_prompt = """\
+以下是本卷内所有篇章的 L3 摘要：
+
+{l3_summaries}
+
+请生成本卷的 L4 摘要，要求：
+- 总字数 ≤3000 字
+- 卷目标与冲突升级：本卷要解决什么问题，冲突如何升级
+- 本卷主要事件链：按时间顺序列出关键事件
+- 卷内角色变化：主要角色的状态/关系/立场变化
+- 已回收伏笔 / 遗留伏笔
+- 卷结局状态与下一卷压力：本卷结束时的局势，以及留给下一卷的核心矛盾
+
+仅返回 L4 摘要文本，不要解释。生成后此文件冻结，不再修改。
+"""
+
+# B5. L5 全书摘要（所有 L4 → 全书摘要，卷末重生成，旧版归档）
+global_summary_prompt = """\
+以下是本作品所有已完成卷的 L4 摘要：
+
+{l4_summaries}
+
+请生成全书 L5 摘要，要求：
+- 总字数 ≤2000 字
+- 整书主线进展：从开篇到当前的核心冲突演化
+- 当前局势：主角处境、主要势力格局、核心矛盾
+- 已揭示的重要真相
+- 仍悬而未决的核心问题
+
+此摘要用于写前上下文的最高层背景，需高度浓缩，突出对后续写作有直接价值的信息。
+仅返回 L5 摘要文本，不要解释。
+"""
+
+# =============== C. update_character_state_prompt v2 ===================
+# 变更：输出拆为「当前状态」更新 + 独立「变更记录」条目（引用 FACT ID）
+
+update_character_state_prompt_v2 = """\
+以下是新完成的章节文本：
+{chapter_text}
+
+本章新增的正典事实（已落盘的 FACT ID 列表）：
+{new_fact_ids}
+
+这是当前角色实体档案：
+{entity_file}
+
+请完成两项输出：
+
+## 输出一：更新后的「当前状态」段
+
+格式：
+├──物品: （更新后的物品列表）
+├──能力: （更新后的能力列表）
+├──身体状态: （更新后）
+├──心理状态: （更新后）
+├──关系网: （更新后，有变化的关系标注「→变化」）
+├──最后出场: 第 {novel_number} 章
+└──已知秘密: （追加本章通过 known_by 获得的 FACT ID）
+
+## 输出二：变更记录条目（追加到文件末尾）
+
+格式：
+- 第 {novel_number} 章：（描述本章发生的状态变化，引用相关 FACT ID）
+
+要求：
+- 只更新有变化的字段，无变化的字段保持原文
+- 变更记录只追加，不修改已有记录
+- 语言简洁
+
+分别输出两段，用「---」分隔。
+"""
+
+# =============== D. 统一风格：summary_prompt v2 ===================
+# 旧 summary_prompt 是逐章覆盖式，新版明确用途为 L3/L4/L5 聚合
+# 逐章 L1 生成改用 chapter_brief_prompt（见 B1）
+
+# [deprecated] summary_prompt 原用于逐章覆盖全局摘要，现已废弃此用途
+# 新的分层摘要生成请使用：
+#   L1: chapter_brief_prompt
+#   L2: chunk_summary_prompt
+#   L3: arc_summary_prompt
+#   L4: volume_summary_prompt
+#   L5: global_summary_prompt
+
+# =============== E. enrich_prompt v2 ===================
+# 变更：加入一致性约束，扩写时不得引入新设定冲突
+
+enrich_prompt_v2 = """\
+以下章节文本较短，请在保持剧情连贯的前提下进行扩写，使其更充实，接近 {word_number} 字左右。
+
+原内容：
+{chapter_text}
+
+扩写约束（必须遵守）：
+- 不得引入原文中未出现的新角色、新道具、新地点
+- 不得改变原文已确立的事件结果和人物决策
+- 不得违反以下硬约束：
+{entity_constraints}
+- 扩写内容应为场景细节、感官描写、心理活动、对话展开，而非新情节
+
+仅给出扩写后的完整文本，不要解释任何内容。
+"""
