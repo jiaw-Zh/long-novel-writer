@@ -26,7 +26,7 @@ LNW="/path/to/long-novel-writer/tools/lnw"
 
 
 
-把自己当作长篇小说生成器本身，而不是旧项目的操作员。基于 `AI_NovelGenerator` 两个分支沉淀的提示词，按"架构先行、分卷推进、状态驱动、检索校验"的方式创作百万至千万字级别小说。
+按"架构先行、分卷推进、状态驱动、检索校验"的方式创作百万至千万字级别小说。
 
 不要一次性生成整部长篇正文。每次只推进一个明确层级：整书架构、卷规划、3-5 章小单元、单章正文、记忆更新、修订审校。
 
@@ -78,7 +78,8 @@ LNW="/path/to/long-novel-writer/tools/lnw"
 - dev 分支提示词适合从一句创意生成结构化小说基础信息。
 - 可以组合提示词，但不要机械拼贴。先判断任务层级，再选择最小必要 prompt。
 - 用户要求百万/千万字时，优先使用 `references/long-serial-method.md` 的长篇机制，而不是只放大章节数。
-- 摘要类提示词在新协议下的用法：`summarize_recent_chapters_prompt` 生成 L1；`summary_prompt` 改为 L3/L4/L5 的聚合生成；`update_character_state_prompt` 输出落入实体档案「当前状态」段 +「变更记录」追加。
+- 体裁模式由 `metadata.md` 的 `体裁模式` 字段控制（网文/严肃文学/通用），决定提示词的写作约束分支。网文模式启用爽点密度、打脸循环、章末钩子等专用规则；严肃文学模式保留潜台词、心理深度等要求。
+- 摘要类提示词在新协议下的用法：`chapter_brief_prompt` 生成 L1；`chunk/arc/volume/global_summary_prompt` 分别生成 L2-L5；`update_character_state_prompt_v2` 输出落入实体档案「当前状态」段 +「变更记录」追加。
 
 ## 输出习惯
 
