@@ -31,38 +31,44 @@
 3. `core_seed_prompt_base` + schema suffix
 4. `novel_meta_prompt_base` + schema suffix
 
-适用场景：用户只有点子，想先得到完整故事雏形、类型、基调、核心种子和小说基础设定。
+适用场景：用户只有点子，想先得到完整故事雏形、类型、基调、核心种子和小说基础设定。产出汇总到 `metadata.md`。
 
 ## 从已有设定开始
 
 使用旧分支中文提示词 `legacy-zh-prompt_definitions.py`：
 
-1. `core_seed_prompt`
-2. `character_dynamics_prompt`
-3. `world_building_prompt`
-4. `plot_architecture_prompt`
-5. `create_character_state_prompt`
-6. `chapter_blueprint_prompt` 或 `chunked_chapter_blueprint_prompt`
+1. `core_seed_prompt` → `settings/core-seed.md`
+2. `character_dynamics_prompt` → `settings/character-dynamics.md`
+3. `world_building_prompt` → `settings/world-building.md`
+4. `plot_architecture_prompt` → `settings/plot-architecture.md`
+5. `create_character_state_prompt_v2` → `entities/characters/*.md`
+6. `create_entity_prompt`（分 4 次，`entity_type` 分别为 locations/items/organizations/systems）→ `entities/{type}/*.md`
+7. 网文模式：`golden_finger_design_prompt` → `settings/golden-finger.md`
+8. 网文模式：`opening_three_chapters_prompt` → `blueprints/opening-three.md`
+9. `chapter_blueprint_prompt_v2`（≤100 章）或 `chunked_chapter_blueprint_prompt_v2`（>100 章分批）→ `blueprints/chapters.md`
+10. 手工从 1-4 的产出中提炼 `story-bible.md`（≤3000 字）
 
 适用场景：用户已有题材、主角、世界观或大纲，需要搭建百万字主链路。
 
 ## 写章节正文
 
-第一章使用 `first_chapter_draft_prompt`。后续章节使用 **`next_chapter_draft_prompt_v2`**（v1 `next_chapter_draft_prompt` 已废弃）。
+第一章使用 **`first_chapter_draft_prompt_v2`**。后续章节使用 **`next_chapter_draft_prompt_v2`**。v1 已从 prompt 文件中移除。
 
 `next_chapter_draft_prompt_v2` 的槽位填充方式：
 
 | 槽位 | 来源 |
 |---|---|
-| `layered_summary` | `summaries/global.md`（L5）+ 当前 `volumes/volume-NNN.md`（L4）+ 当前 `arcs/arc-NNN.md`（L3）三段拼接 |
+| `layered_summary` | `summaries/global.md`（L5）+ 当前 `volumes/volume-NNN.md`（L4）+ 当前 `arcs/arc-NNN.md`（L3）三段拼接。**前期过渡**：L5/L4/L3 全部缺失时填入 `story-bible.md` 全文代替 |
 | `previous_chapter_excerpt` | 上一章结尾 500-1000 字原文 |
 | `user_guidance` | 用户本轮指导 |
 | `entity_states` | 出场角色 `entities/characters/<slug>.md` 的「当前状态」段聚合 |
 | `known_facts` | `canon/facts.jsonl` 按出场角色 slug 过滤 `known_by` 字段的结果（`lnw filter-facts <slugs>`）|
-| `dialogue_samples` | 出场角色 `dialogue-samples/<slug>.md` 内容聚合 |
+| `dialogue_samples` | 出场角色 `dialogue-samples/<slug>.md` 内容聚合。角色首次登场且无历史样本时填「首次登场，无历史样本」 |
 | `short_summary` | 最近 3-5 章 `chapter-*.brief.md`（L1）|
 | 当前/下章章节信息 | 章节 blueprint |
 | `filtered_context` | `chapter-*.index.md` 关键词反查命中的 L1 + 活跃伏笔 + `continuity-issues.md` 禁用桥段 |
+
+`first_chapter_draft_prompt_v2` 的 `novel_setting` 槽位 = `story-bible.md` 全文 + `metadata.md` 的「类型/基调/目标读者/单章字数/体裁模式」字段拼接。`entity_states` 同上。
 
 有 shell 权限时，`lnw assemble-context <N>` 自动完成上述所有槽位的文件读取和拼接。
 
@@ -76,8 +82,8 @@
 4. 追加 `canon/progression.jsonl`：本章发生的境界/能力进阶。
 5. 追加 `canon/timeline.md` 与 `canon/rules.md`。
 6. **`update_character_state_prompt_v2`** → 输出「当前状态」更新段 + 独立「变更记录」条目（引用 FACT ID），分别写入实体档案对应位置。
-7. 维护 `chapter-NNNN.index.md`、`foreshadowing-ledger.md`、`subplots.md`。
-8. 写后校验：按 `memory-protocol.md` §5 的 8 项清单检查，使用 `consistency-check-prompt.md`。
+7. 维护 `chapter-NNNN.index.md`；用 **`extract_foreshadowing_prompt`** 更新 `foreshadowing-ledger.md`；用 **`update_subplots_prompt`** 更新 `subplots.md`。
+8. 写后校验：按 `memory-protocol.md` §5 的 8 项清单检查，使用 `consistency-check-prompt.md`。校验失败时走 **`fix_chapter_prompt`** 做局部修复（最多 2 次），严重问题回到 step 3 重写，无法修复则登记 `continuity-issues.md`。
 
 **chunk/arc/volume 末章额外执行**：
 

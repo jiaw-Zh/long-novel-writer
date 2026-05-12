@@ -33,7 +33,8 @@ LNW="/path/to/long-novel-writer/tools/lnw"
 ## 工作流
 
 1. **作品初始化**
-   - 读取或创建作品目录时，先看 `references/file-contract.md`（文件布局）与 `references/memory-protocol.md`（记忆协议）。
+   - 读取或创建作品目录时，先看 `references/file-contract.md`（文件布局 + 立项 checklist）与 `references/memory-protocol.md`（记忆协议）。
+   - 立项顺序按 file-contract 的「立项 checklist」段执行：metadata → 设定正典 → 实体档案 → 网文额外项（金手指/开篇三章）→ 章节目录 → 空壳文件。
    - 若用户只有一句创意，先用 dev 分支的"AI 创建小说"链路：扩展创意 -> 提炼构思 -> 故事核心 -> 小说整体设定。
    - 若用户已有设定，直接进入核心种子、世界观、角色动力学和整体剧情架构。
    - `story-bible.md` 立项时即写定并视为冻结基线，后续修订必须追加「变更记录」。
@@ -45,7 +46,8 @@ LNW="/path/to/long-novel-writer/tools/lnw"
 
 3. **章节生成**
    - 写正文前运行 `lnw assemble-context <N>`（需 shell 权限），输出即为完整写前上下文（9 段）。无 shell 权限时按 `memory-protocol.md` §4 手工加载。
-   - 选择提示词按 `references/prompt-workflow.md`。
+   - 上下文至少覆盖：story-bible、当前卷/篇章摘要（前期缺失时以 story-bible 替代）、当前 + 下一章 blueprint、最近 3-5 章 L1 brief、上一章结尾段原文、出场实体档案、活跃伏笔、禁用桥段、关键词反查到的相关章节 brief。
+   - 选择提示词按 `references/prompt-workflow.md`。第一章用 `first_chapter_draft_prompt_v2`，后续章节用 `next_chapter_draft_prompt_v2`。
    - 单章正文只输出正文，除非用户要求分析或拆解。
 
 4. **章节落盘与记忆更新**

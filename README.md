@@ -25,7 +25,14 @@ AI 写长篇小说有一个根本性问题：**上下文窗口装不下整部作
 角色、地点、道具、势力、力量体系各自独立建档，包含硬约束、追加式时间线和变更记录。写作时只按需加载本章出场实体，精准且省 token。典型写前上下文用量 25k–40k token，1M 窗口极度宽裕。
 
 ### 正典账本（Canon Ledger）
-`canon/facts.jsonl` 以原子断言形式记录约束性事实，只追加不修改，带原文引用。配合 `canon/promises.jsonl`（承诺/誓言）、`canon/progression.jsonl`（境界进阶轨迹）、`canon/timeline.md`（时间线）。写后校验时按实体过滤账本，数值漂移、能力越界、死而复生等硬冲突在落盘前即被拦截。
+五个只追加不修改的结构化文件：
+- `canon/facts.jsonl` — 原子事实断言，带原文引用和 `known_by` 字段
+- `canon/promises.jsonl` — 角色承诺/誓言，带截止日期
+- `canon/progression.jsonl` — 境界/能力进阶轨迹，校验单调性
+- `canon/rules.md` — 世界规则
+- `canon/timeline.md` — 时间线
+
+写后校验时按实体过滤账本，数值漂移、能力越界、死而复生等硬冲突在落盘前即被拦截。
 
 ### POV 知识边界
 `facts.jsonl` 的 `known_by` 字段追踪每条秘密"谁知道"。写前加载出场角色的已知信息列表，防止角色使用尚未获得的信息——这是长篇后期最常见的 OOC 类型。
@@ -36,16 +43,29 @@ AI 写长篇小说有一个根本性问题：**上下文窗口装不下整部作
 ### 写后双 agent 校验
 8 项校验（正典冲突 / POV 知识边界 / 硬约束 / 进阶合法性 / 命名一致性 / 桥段重复 / 伏笔对齐 / 场景打分）+ 固定落盘顺序。支持独立 subagent 执行校验，避免写作 agent 自我合理化。
 
-### 命名一致性保障
-`naming.md` 标准名称表记录每个实体的规范写法和禁用变体。`lnw check-naming <N>` 自动 grep 正文，零 LLM 拦截"青云宗/青云派"这类漂移。
+### 命名一致性
+`naming.md` 标准名称表记录每个实体的规范写法和禁用变体。有工具时用 `lnw check-naming <N>` 自动 grep 正文，零 LLM 拦截"青云宗/青云派"这类漂移。
 
 ### 副线与配角追踪
-`subplots.md` 追踪所有副线的最后推进章节。超过 20 章未推进的副线会在写前自动提示，配角不会无故失踪。
+`subplots.md` 追踪所有副线的最后推进章节。超过 20 章未推进的副线会在写前自动提示。
 
 ### 记忆快照与分叉写作
-每 50 章或每卷收尾自动快照记忆层（不含正文，正文走 git）。出问题可回滚，想探索"如果当时选了另一条路"可以从快照建分支独立续写。
+每 50 章或每卷收尾快照记忆层（不含正文，正文走 git）。出问题可回滚，想探索"如果当时选了另一条路"可以从快照建分支独立续写。
 
-### CLI 工具（可选）
+### 体裁模式（网文 / 严肃文学）
+`metadata.md` 的 `体裁模式` 字段控制提示词的写作约束分支：
+- **网文模式**：爽点密度、打脸循环、章末钩子、具体数值、金手指节奏
+- **严肃文学模式**：潜台词冲突、心理深度、隐喻系统、认知颠覆
+
+### 网文专用提示词
+5 个专为网络小说设计的提示词：
+- 章末钩子（10 种模式交替）
+- 打脸三段式
+- 开篇三章黄金结构
+- 境界突破章四段式
+- 金手指设计与升级路线
+
+### CLI 工具（dev-tools 分支）
 `tools/lnw` 提供 8 个核心命令，将机械操作固化为确定性脚本：
 
 ```bash
@@ -101,6 +121,14 @@ Install this Agent Skill from GitHub as a personal Claude Code skill: https://gi
 Use $skill-installer to install this skill from GitHub: https://github.com/jiaw-Zh/long-novel-writer
 ```
 
+## 分支说明
+
+| 分支 | 说明 |
+|---|---|
+| `dev` | 主开发分支，记忆系统 + 提示词，无 CLI 工具依赖 |
+| `dev-tools` | 包含 `tools/lnw` CLI 工具（需 shell 权限 + jq），适合 Claude Code / Codex 环境 |
+| `main` | 稳定版（待 dev 验证后合入）|
+
 ## 项目结构
 
 ```
@@ -115,7 +143,7 @@ references/
     legacy-zh-prompt_definitions.py   # 完整写作链路提示词
     dev-prompt_default.yaml           # 从创意生成小说基础信息
     consistency-check-prompt.md       # 写后一致性校验提示词
-tools/
+tools/                            # dev-tools 分支专有
   lnw                             # CLI 入口
   lib/                            # 各子命令实现
 ```
