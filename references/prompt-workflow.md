@@ -58,7 +58,7 @@
 
 | 槽位 | 来源 |
 |---|---|
-| `layered_summary` | `summaries/global.md`（L5）+ 当前 `volumes/volume-NNN.md`（L4）+ 当前 `arcs/arc-NNN.md`（L3）三段拼接。**前期过渡**：L5/L4/L3 全部缺失时填入 `story-bible.md` 全文代替 |
+| `layered_summary` | L5/L4/L3 按实际存在的最高层拼接（详见 `memory-protocol.md §4` 的前期过渡表）；全部缺失时填 `story-bible.md` 全文 |
 | `previous_chapter_excerpt` | 上一章结尾 500-1000 字原文 |
 | `user_guidance` | 用户本轮指导 |
 | `entity_states` | 出场角色 `entities/characters/<slug>.md` 的「当前状态」段聚合 |
@@ -72,18 +72,33 @@
 
 有 shell 权限时，`lnw assemble-context <N>` 自动完成上述所有槽位的文件读取和拼接。
 
-## 更新记忆
+## 章节生成后处理
 
-**章节完成后**（单章级，每章都做，按此顺序）：
+**章节正文生成后不要直接落盘**，按以下三阶段执行（对齐 `memory-protocol.md` §5）：
 
-1. **`chapter_brief_prompt`** → 生成 L1 brief，落盘到 `chapter-NNNN.brief.md` 后**冻结**。（替代旧版 `summarize_recent_chapters_prompt`）
-2. 追加 `canon/facts.jsonl`：本章新增约束性事实（含 `known_by` 字段）。
-3. 追加 `canon/promises.jsonl`：本章新增或状态变化的承诺/誓言。
-4. 追加 `canon/progression.jsonl`：本章发生的境界/能力进阶。
-5. 追加 `canon/timeline.md` 与 `canon/rules.md`。
-6. **`update_character_state_prompt_v2`** → 输出「当前状态」更新段 + 独立「变更记录」条目（引用 FACT ID），分别写入实体档案对应位置。
-7. 维护 `chapter-NNNN.index.md`；用 **`extract_foreshadowing_prompt`** 更新 `foreshadowing-ledger.md`；用 **`update_subplots_prompt`** 更新 `subplots.md`。
-8. 写后校验：按 `memory-protocol.md` §5 的 8 项清单检查，使用 `consistency-check-prompt.md`。校验失败时走 **`fix_chapter_prompt`** 做局部修复（最多 2 次），严重问题回到 step 3 重写，无法修复则登记 `continuity-issues.md`。
+### 阶段 A：准备（产物暂存内存，不落盘）
+
+| 步骤 | Prompt | 产物 |
+|---|---|---|
+| A1 | `chapter_brief_prompt` | L1 brief 草稿 |
+| A2 | — | 新 facts 列表（agent 从正文提取，按 `canon/facts.jsonl` 格式） |
+| A3 | — | 新 promises 列表 |
+| A4 | — | 新 progression 列表 |
+| A5 | — | timeline / rules 新增条目 |
+| A6 | `update_character_state_prompt_v2` | 实体档案「当前状态」更新段 +「变更记录」条目 |
+| A7 | `extract_foreshadowing_prompt` | 伏笔变更列表（新增/强化/回收） |
+| A8 | `update_subplots_prompt` | 副线推进列表 |
+| A9 | — | `chapter-NNNN.index.md` 草稿（含 new_facts/foreshadowing_set/foreshadowing_paid 等字段）|
+
+### 阶段 B：写后校验
+
+按 `memory-protocol.md` §5 的 8 项清单检查，使用 `consistency-check-prompt.md`。校验输入 = 本章正文 + 阶段 A 的所有草稿 + 历史 canon/实体/naming。
+
+校验失败时走 **`fix_chapter_prompt`** 做局部修复（最多 2 次，修复后重跑阶段 A→B），严重问题回到章节正文生成步骤重写，无法修复则登记 `continuity-issues.md`。
+
+### 阶段 C：落盘
+
+校验通过后按 `memory-protocol.md` §5 的 11 步顺序落盘（本质是把阶段 A 的草稿写入对应文件）。
 
 **chunk/arc/volume 末章额外执行**：
 
