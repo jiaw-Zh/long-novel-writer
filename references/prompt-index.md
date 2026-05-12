@@ -9,7 +9,7 @@
 
 ## 中文提示词主文件
 
-文件：`references/prompts/legacy-zh-prompt_definitions.py`
+文件：`references/prompts/prompt-templates.md`
 
 ### 设定类（立项用）
 - `core_seed_prompt` — 核心种子

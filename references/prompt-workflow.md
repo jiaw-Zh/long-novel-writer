@@ -35,7 +35,7 @@
 
 ## 从已有设定开始
 
-使用旧分支中文提示词 `legacy-zh-prompt_definitions.py`：
+使用 `references/prompts/prompt-templates.md`：
 
 1. `core_seed_prompt` → `settings/core-seed.md`
 2. `character_dynamics_prompt` → `settings/character-dynamics.md`
