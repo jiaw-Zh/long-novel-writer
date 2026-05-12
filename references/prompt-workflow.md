@@ -50,7 +50,25 @@
 
 适用场景：用户已有题材、主角、世界观或大纲，需要搭建百万字主链路。
 
-## 写章节正文
+## 体裁模式槽位填充规则
+
+所有带体裁模式的 prompt 中，槽位填充方式标准化如下：
+
+| 槽位 | 填什么 | 示例 |
+|---|---|---|
+| `{genre_mode}` | **标签字符串**（`"网文"` 或 `"严肃文学"` 或 `"通用"`）| `网文` |
+| `{genre_mode_instructions}` | **完整常量文本**（`GENRE_MODE_WEBNOVEL` 或 `GENRE_MODE_LITERARY`）| 常量内容全文 |
+| `{genre_constraints}` | **完整常量文本**（`GENRE_CONSTRAINTS_WEBNOVEL` 等）| 常量内容全文 |
+| `{genre_rhythm_rules}` | **完整常量文本**（`GENRE_RHYTHM_WEBNOVEL` 等）| 常量内容全文 |
+| `{genre_import_constraints}` | **完整常量文本**（`GENRE_IMPORT_CONSTRAINTS_WEBNOVEL` 等）| 常量内容全文 |
+
+**原则**：带 `_instructions` / `_constraints` / `_rules` 后缀的槽位填常量全文，仅带 `_mode` 后缀的槽位填标签字符串。
+
+体裁模式从 `metadata.md` 的「体裁模式」字段读取。
+
+---
+
+
 
 第一章使用 **`first_chapter_draft_prompt_v2`**。后续章节使用 **`next_chapter_draft_prompt_v2`**。v1 已从 prompt 文件中移除。
 

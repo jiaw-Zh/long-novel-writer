@@ -81,6 +81,37 @@ novel-title/
 - **正典账本只追加不修改**：发现事实错误时在 `continuity-issues.md` 登记，并追加一条 `retraction` 条目，不删除原条目。
 - 章节文件只放正文，分析与元数据放 `.brief.md` / `.index.md`。
 
+## 命名与编号规则（硬约束）
+
+### 实体 slug
+- 中文名：全拼音 kebab-case，如"陆无涯"→`lu-wu-ya`、"青云剑宗"→`qing-yun-jian-zong`
+- 英文名：全小写 kebab-case，如"Vincent Lee"→`vincent-lee`
+- 标点、空格、特殊符号一律转为 `-`，连续 `-` 合并为单个
+- 同音字手工加数字区分：`li-ming-1` / `li-ming-2`
+- slug 一经写入 `naming.md` 即冻结，不允许更名。需要改名时在 `naming.md` 标注 `旧 slug → 新 slug`，但旧 slug 的文件保留且硬链接到新位置。
+
+### 编号位数（全项目统一）
+| 项 | 位数 | 示例 |
+|---|---|---|
+| volume | 3 位 | `volume=001`、`volumes/volume-001.md` |
+| arc | 3 位 | `arc=001`、`arcs/arc-001.md` |
+| chunk | 4 位 | `chunk=0001`、`chunks/chunk-0001.md` |
+| chapter | 4 位 | `chapter-0001.md` |
+| FACT ID | 4 位 | `FACT-0001` |
+| PROMISE ID | 4 位 | `PROMISE-0001` |
+| PROG ID | 4 位 | `PROG-0001` |
+| F（伏笔）ID | 3 位 | `F-001` |
+| SUB（副线）ID | 3 位 | `SUB-001` |
+
+blueprint 标注章节归属时使用同样位数：`所属单元：volume=001 arc=001 chunk=0001`。
+
+### 边界对齐规则（blueprint 阶段强制）
+- chunk 每 3-5 章，**不允许跨 arc**
+- arc 每 10-30 章，**不允许跨 volume**
+- volume 末必定同时是 arc 末 + chunk 末
+- arc 末必定是 chunk 末
+- 生成 blueprint 时若某 arc 末 chunk 不足 3 章，将该 chunk 归并到前一 chunk（前一 chunk 可扩至 6 章，超出则重新分块）
+
 ## 立项 checklist（新作品初始化顺序）
 
 按此顺序生成文件，后一步可能依赖前一步的输出：
@@ -96,7 +127,7 @@ novel-title/
 | `settings/character-dynamics.md` | `character_dynamics_prompt` | core_seed |
 | `settings/world-building.md` | `world_building_prompt` | core_seed |
 | `settings/plot-architecture.md` | `plot_architecture_prompt` | core_seed + character_dynamics + world_building |
-| `story-bible.md` | **手工汇总** | 上述四份，提炼 ≤3000 字 |
+| `story-bible.md` | `compile_story_bible_prompt` | 上述四份 + metadata |
 
 **3. 实体档案**
 | 产出 | Prompt | 槽位填充 |
@@ -118,13 +149,14 @@ novel-title/
 - Prompt：`chapter_blueprint_prompt_v2`（≤100 章）或分批用 `chunked_chapter_blueprint_prompt_v2`（>100 章，每批 50 章）
 - blueprint 中每章必须标注 `volume=N arc=N chunk=N`（chunk 每3-5章，arc 每10-30章，volume 按 metadata 的「单卷章数」）
 
-**6. 空壳文件**（以下文件在落盘第 1 章后才会有内容，但立项时需创建空壳）
+**6. 空壳文件与 naming 初始化**
 - `canon/facts.jsonl` / `promises.jsonl` / `progression.jsonl`：空文件
 - `canon/rules.md` / `timeline.md`：仅标题
-- `naming.md`：按 file-contract 模板，填入已知实体的规范写法
+- **`naming.md`**：用 `compile_naming_prompt` 从 character-dynamics + world-building + golden-finger 提取所有已命名实体，生成规范写法 + slug + 初始禁用变体
 - `foreshadowing-ledger.md`：仅表头
 - `subplots.md`：仅表头
-- `continuity-issues.md`：仅三个子标题
+- `continuity-issues.md`：仅三个子标题（「禁用桥段」/「待修复」/「已登记的已知问题」）
+- `dialogue-samples/`：目录存在但无文件（首次登场章节生成时才建）
 
 立项完成后即可开始写第 1 章。
 
