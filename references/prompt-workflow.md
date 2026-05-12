@@ -6,9 +6,9 @@
 
 | 体裁模式 | 适用场景 | 写作约束常量 |
 |---|---|---|
-| `网文` | 爽文/修真/都市/系统流 | `GENRE_MODE_WEBNOVEL`、`GENRE_RHYTHM_WEBNOVEL` 等 |
-| `严肃文学` | 纯文学/深度叙事 | `GENRE_MODE_LITERARY`、`GENRE_RHYTHM_LITERARY` 等 |
-| `通用` | 不确定时默认 | 两套规则各取一半 |
+| `网文` | 爽文/修真/都市/系统流 | `GENRE_MODE_WEBNOVEL`、`GENRE_RHYTHM_WEBNOVEL`、`GENRE_CONSTRAINTS_WEBNOVEL` |
+| `严肃文学` | 纯文学/深度叙事 | `GENRE_MODE_LITERARY`、`GENRE_RHYTHM_LITERARY`、`GENRE_CONSTRAINTS_LITERARY` |
+| `通用` | 不确定时默认 | `GENRE_MODE_GENERAL`、`GENRE_RHYTHM_GENERAL`、`GENRE_CONSTRAINTS_GENERAL` |
 
 所有 v2 提示词的 `{genre_mode_instructions}` / `{genre_rhythm_rules}` / `{genre_constraints}` 槽位，根据 `metadata.md` 的体裁模式填入对应常量。
 
