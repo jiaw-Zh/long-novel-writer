@@ -99,13 +99,13 @@ novel-title/
 | `story-bible.md` | **手工汇总** | 上述四份，提炼 ≤3000 字 |
 
 **3. 实体档案**
-| 产出 | Prompt | entity_type |
+| 产出 | Prompt | 槽位填充 |
 |---|---|---|
-| `entities/characters/*.md` | `create_character_state_prompt_v2` | — |
-| `entities/locations/*.md` | `create_entity_prompt` | locations |
-| `entities/items/*.md` | `create_entity_prompt` | items |
-| `entities/organizations/*.md` | `create_entity_prompt` | organizations |
-| `entities/systems/*.md` | `create_entity_prompt` | systems |
+| `entities/characters/*.md` | `create_character_state_prompt_v2` | `genre_constraints` 按体裁填 `GENRE_CONSTRAINTS_*` |
+| `entities/locations/*.md` | `create_entity_prompt` | `entity_type=locations`, `entity_type_constraints=ENTITY_CONSTRAINTS_LOCATIONS`, `entity_type_state_fields=ENTITY_STATE_LOCATIONS` |
+| `entities/items/*.md` | `create_entity_prompt` | `entity_type=items`, 对应 `ENTITY_CONSTRAINTS_ITEMS` / `ENTITY_STATE_ITEMS` |
+| `entities/organizations/*.md` | `create_entity_prompt` | `entity_type=organizations`, 对应 `ENTITY_CONSTRAINTS_ORGANIZATIONS` / `ENTITY_STATE_ORGANIZATIONS` |
+| `entities/systems/*.md` | `create_entity_prompt` | `entity_type=systems`, 对应 `ENTITY_CONSTRAINTS_SYSTEMS` / `ENTITY_STATE_SYSTEMS` |
 
 **4. 网文模式额外项**（体裁模式=网文 时）
 | 产出 | Prompt |
