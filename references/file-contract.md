@@ -11,6 +11,17 @@ novel-title/
   story-bible.md                    # 设定正典（核心种子/终局/世界观/视角，冻结）
   continuity-issues.md              # 冲突与禁用项
 
+  settings/
+    core-seed.md                    # 核心种子（core_seed_prompt 输出）
+    character-dynamics.md           # 角色动力学（character_dynamics_prompt 输出）
+    world-building.md               # 世界观（world_building_prompt 输出）
+    plot-architecture.md            # 情节架构（plot_architecture_prompt 输出）
+    golden-finger.md                # 网文模式金手指设计（golden_finger_design_prompt 输出）
+
+  blueprints/
+    chapters.md                     # 分章节 blueprint（chapter_blueprint_prompt_v2 输出）
+    opening-three.md                # 网文模式开篇三章大纲（opening_three_chapters_prompt 输出）
+
   summaries/
     global.md                       # L5 全书摘要（卷结束时重生成）
 
@@ -69,6 +80,53 @@ novel-title/
 - **实体档案按时间线追加**，不覆盖既有事实；人物/设定修订必须在文件内显式标注前后差异。
 - **正典账本只追加不修改**：发现事实错误时在 `continuity-issues.md` 登记，并追加一条 `retraction` 条目，不删除原条目。
 - 章节文件只放正文，分析与元数据放 `.brief.md` / `.index.md`。
+
+## 立项 checklist（新作品初始化顺序）
+
+按此顺序生成文件，后一步可能依赖前一步的输出：
+
+**1. 元信息与创意扩展**
+- 用户只给一句话时：`dev-prompt_default.yaml` 的 4 个 prompt 链路（expand → extract → core_seed → novel_meta），输出汇总到 `metadata.md`。
+- 用户已有设定时：直接让用户/agent 填 `metadata.md`。
+
+**2. 设定正典**
+| 产出 | Prompt | 输入 |
+|---|---|---|
+| `settings/core-seed.md` | `core_seed_prompt` | metadata |
+| `settings/character-dynamics.md` | `character_dynamics_prompt` | core_seed |
+| `settings/world-building.md` | `world_building_prompt` | core_seed |
+| `settings/plot-architecture.md` | `plot_architecture_prompt` | core_seed + character_dynamics + world_building |
+| `story-bible.md` | **手工汇总** | 上述四份，提炼 ≤3000 字 |
+
+**3. 实体档案**
+| 产出 | Prompt | entity_type |
+|---|---|---|
+| `entities/characters/*.md` | `create_character_state_prompt_v2` | — |
+| `entities/locations/*.md` | `create_entity_prompt` | locations |
+| `entities/items/*.md` | `create_entity_prompt` | items |
+| `entities/organizations/*.md` | `create_entity_prompt` | organizations |
+| `entities/systems/*.md` | `create_entity_prompt` | systems |
+
+**4. 网文模式额外项**（体裁模式=网文 时）
+| 产出 | Prompt |
+|---|---|
+| `settings/golden-finger.md` | `golden_finger_design_prompt` |
+| `blueprints/opening-three.md` | `opening_three_chapters_prompt` |
+
+**5. 章节目录**
+- 产出：`blueprints/chapters.md`
+- Prompt：`chapter_blueprint_prompt_v2`（≤100 章）或分批用 `chunked_chapter_blueprint_prompt_v2`（>100 章，每批 50 章）
+- blueprint 中每章必须标注 `volume=N arc=N chunk=N`（chunk 每3-5章，arc 每10-30章，volume 按 metadata 的「单卷章数」）
+
+**6. 空壳文件**（以下文件在落盘第 1 章后才会有内容，但立项时需创建空壳）
+- `canon/facts.jsonl` / `promises.jsonl` / `progression.jsonl`：空文件
+- `canon/rules.md` / `timeline.md`：仅标题
+- `naming.md`：按 file-contract 模板，填入已知实体的规范写法
+- `foreshadowing-ledger.md`：仅表头
+- `subplots.md`：仅表头
+- `continuity-issues.md`：仅三个子标题
+
+立项完成后即可开始写第 1 章。
 
 ## 文件内容规范
 
