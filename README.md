@@ -140,7 +140,7 @@ references/
   prompt-workflow.md              # 提示词选择与使用流程
   prompt-index.md                 # 提示词索引
   prompts/
-    legacy-zh-prompt_definitions.py   # 完整写作链路提示词
+    prompt-templates.md               # 完整写作链路提示词模板
     dev-prompt_default.yaml           # 从创意生成小说基础信息
     consistency-check-prompt.md       # 写后一致性校验提示词
 tools/                            # dev-tools 分支专有
