@@ -16,6 +16,8 @@
 - `character_dynamics_prompt` — 角色动力学
 - `world_building_prompt` — 世界观构建
 - `plot_architecture_prompt` — 情节架构（三幕式）
+- `compile_story_bible_prompt` — 从 4 份设定提炼 story-bible.md（≤3000 字冻结基线）
+- `compile_naming_prompt` — 从设定提取实体名并生成 naming.md 初始内容（含 slug 规则）
 
 ### 实体档案类
 - `create_character_state_prompt_v2` — 生成角色档案（对齐 entities/characters 结构，带体裁模式）
