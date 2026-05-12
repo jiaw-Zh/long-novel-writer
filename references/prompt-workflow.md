@@ -50,6 +50,26 @@
 
 适用场景：用户已有题材、主角、世界观或大纲，需要搭建百万字主链路。
 
+## 槽位数据源速查表
+
+以下槽位在多个 prompt 中出现，统一标注数据来源：
+
+| 槽位 | 数据源 |
+|---|---|
+| `{novel_architecture}` | `settings/plot-architecture.md` 全文 |
+| `{novel_setting}` | `story-bible.md` 全文 + `metadata.md` 的「类型/基调/目标读者/单章字数/体裁模式」字段拼接 |
+| `{core_seed}` | `settings/core-seed.md` 全文 |
+| `{character_dynamics}` | `settings/character-dynamics.md` 全文 |
+| `{world_building}` | `settings/world-building.md` 全文 |
+| `{initial_situation}` | 从 `settings/character-dynamics.md` 中主角的「初始状态」提取 |
+| `{core_goal}` | 从 `settings/core-seed.md` 中主角的「关键行动」或终局目标提取 |
+| `{golden_finger}` | `settings/golden-finger.md` 全文（网文模式）；非网文模式填「不适用」 |
+| `{genre}` | `metadata.md` 的「类型」字段 |
+| `{target_chapters}` | `metadata.md` 的「目标字数 ÷ 单章字数」计算得出 |
+| `{number_of_chapters}` | 同 `{target_chapters}` |
+| `{word_number}` | `metadata.md` 的「单章字数」字段 |
+| `{user_guidance}` | 用户本轮对话中的额外指导（无则填空）|
+
 ## 体裁模式槽位填充规则
 
 所有带体裁模式的 prompt 中，槽位填充方式标准化如下：
