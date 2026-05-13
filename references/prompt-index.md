@@ -46,6 +46,12 @@
 - `extract_foreshadowing_prompt` — 从章节正文识别伏笔埋设/强化/回收
 - `update_subplots_prompt` — 从章节正文识别副线推进和新增
 
+### 导入既有作品专用
+- `reverse_story_bible_prompt` — 从 L1 briefs + 代表性原文反推 story-bible.md
+- `extract_entities_prompt` — 从 L1 briefs 提取所有实体清单（含重要度分级）
+- `import_entity_prompt` — 从正文为非角色实体生成档案（角色用 Character_Import_Prompt_v2）
+- `canon_backfill_prompt` — 从 L1 briefs + 关键原文反向填充 facts/promises/progression/timeline
+
 ### 知识库类
 - `knowledge_search_prompt` — 生成检索关键词
 - `knowledge_filter_prompt` — 过滤检索结果

@@ -33,11 +33,12 @@ LNW="/path/to/long-novel-writer/tools/lnw"
 ## 工作流
 
 1. **作品初始化**
-   - 读取或创建作品目录时，先看 `references/file-contract.md`（文件布局 + 立项 checklist）与 `references/memory-protocol.md`（记忆协议）。
-   - 立项顺序按 file-contract 的「立项 checklist」段执行：metadata → 设定正典 → 实体档案 → 网文额外项（金手指/开篇三章）→ 章节目录 → 空壳文件。
-   - 若用户只有一句创意，先用 dev 分支的"AI 创建小说"链路：扩展创意 -> 提炼构思 -> 故事核心 -> 小说整体设定。
-   - 若用户已有设定，直接进入核心种子、世界观、角色动力学和整体剧情架构。
-   - `story-bible.md` 立项时即写定并视为冻结基线，后续修订必须追加「变更记录」。
+   - 读取或创建作品目录时，先看 `references/file-contract.md`（文件布局 + 立项 checklist + 导入 checklist）与 `references/memory-protocol.md`（记忆协议）。
+   - **场景分支**：
+     - 用户只有一句创意 → 走 dev 分支的"AI 创建小说"链路：扩展创意 → 提炼构思 → 故事核心 → 小说整体设定；然后走「立项 checklist」。
+     - 用户已有设定（无正文）→ 直接走「立项 checklist」：metadata → 设定正典 → 实体档案 → 网文额外项 → 章节目录 → 空壳文件。
+     - **用户已有正文但无记忆结构 → 走「导入既有作品 checklist」（13 步）**，用 `reverse_story_bible_prompt` / `extract_entities_prompt` / `canon_backfill_prompt` 等反推记忆层，然后从 N+1 章继续写。
+   - `story-bible.md` 立项/导入时即写定并视为冻结基线，后续修订必须追加「变更记录」。
 
 2. **百万字架构**
    - 将故事拆成：整书主线 -> 卷 -> 篇章单元 -> 3-5 章 chunk -> 单章。
