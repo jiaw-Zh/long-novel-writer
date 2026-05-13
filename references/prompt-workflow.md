@@ -50,6 +50,22 @@
 
 适用场景：用户已有题材、主角、世界观或大纲，需要搭建百万字主链路。
 
+## 从现有作品导入
+
+用户已有正文但没有记忆结构时，走导入路径而非从零立项。详细步骤见 `references/file-contract.md` 的「导入既有作品 checklist」（13 步）。使用的核心 prompt：
+
+1. `chapter_brief_prompt` × N → 全量 L1 brief
+2. `reverse_story_bible_prompt` → `story-bible.md`
+3. `extract_entities_prompt` → 实体清单（用户确认）
+4. `Character_Import_Prompt_v2` / `import_entity_prompt` → 实体档案
+5. `compile_naming_prompt` → `naming.md`
+6. `canon_backfill_prompt` → 四份 canon 文件
+7. `extract_foreshadowing_prompt`（按章累积）→ `foreshadowing-ledger.md`
+8. 按层级摘要 prompt（`chunk_summary_prompt` / `arc_summary_prompt` / `volume_summary_prompt` / `global_summary_prompt`）补齐 L2-L5
+9. `chunked_chapter_blueprint_prompt_v2` → 为后续章节生成 blueprint
+
+适用场景：用户已有 1 万字以上作品，想继续写但不想重头开始。
+
 ## 槽位数据源速查表
 
 以下槽位在多个 prompt 中出现，统一标注数据来源：

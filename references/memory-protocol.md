@@ -255,7 +255,8 @@ canon 账本不进写前上下文，只在写后校验时按 entity 过滤后载
 
 ## 八、迁移与退化
 
-- 已有作品若按旧扁平结构写了一部分：保留旧文件不动，从下一个 chunk 起按本协议建 `entities/` / `chapters/*/brief` / `*.index.md` / `canon/`，L5 在下次卷收尾时统一重生成。
+- **用户已有作品但完全无记忆结构**（最常见的接入场景）：走 `references/file-contract.md` 的「导入既有作品 checklist」（13 步），使用 `reverse_story_bible_prompt` / `extract_entities_prompt` / `import_entity_prompt` / `canon_backfill_prompt` 等导入专用 prompt。
+- 已有作品若按**旧扁平结构**写了一部分（本 SKILL 早期版本的产物）：保留旧文件不动，从下一个 chunk 起按本协议建 `entities/` / `chapters/*/brief` / `*.index.md` / `canon/`，L5 在下次卷收尾时统一重生成。
 - 作品不到 30 章时可以简化：L2/L3/L4 合并为单一「阶段摘要」，实体档案合并为一份 `characters.md`，但 **L1 冻结、章节索引、canon 账本仍要维护**。
 
 

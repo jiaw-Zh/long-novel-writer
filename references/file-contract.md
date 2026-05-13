@@ -160,6 +160,87 @@ blueprint 标注章节归属时使用同样位数：`所属单元：volume=001 a
 
 立项完成后即可开始写第 1 章。
 
+## 导入既有作品 checklist
+
+用户已有正文（通常几万到几十万字）但没有本 SKILL 的记忆结构时，走这条路径，而非"新作品立项"。目标：把现有作品接入记忆系统，使后续章节能享受全部校验与长程记忆能力。
+
+**前置条件**
+- 用户提供所有现有正文（章节边界清晰，或能按用户/agent 商定的规则切分）
+- 用户能口述或填写基础元信息（类型/基调/体裁模式/目标字数）
+
+**执行顺序**
+
+**1. 切分章节文件**
+- 若用户已按章分文件：移动到 `chapters/volume-001/chapter-NNNN.md`（若目前还没分卷，先假设全部在 volume=001，等第 7 步再重新划卷）
+- 若是一整份文本：与用户确认分章规则，或让 agent 按章节标题/分隔符自动切
+
+**2. 粗填 metadata.md**
+- 用户直接填：`类型 / 基调 / 目标读者 / 单章字数 / 体裁模式`
+- `目标字数` 可先填「已有 + 计划新增」估值
+- `单卷章数` 先留空，第 7 步确定
+
+**3. 生成全部 L1 brief（必须全量）**
+- 对每章跑 `chapter_brief_prompt`，输入：章节正文 + 章号 + 标题（无则由 agent 起）
+- 产出：`chapter-NNNN.brief.md`
+- 所有 L1 即时冻结，作为后续反推的唯一真实源
+
+**4. 反推 story-bible.md**
+- 用 `reverse_story_bible_prompt`，输入：metadata 粗稿 + 全部 L1 briefs 拼接 + 代表性原文段（开篇 + 每 arc 末高潮章 + 最新章）
+- 直接产出 `story-bible.md`（跳过 settings/ 下四份文件，导入场景不需要）
+- 若用户后续要修订 story-bible，按常规"追加变更记录"规则
+
+**5. 提取实体清单**
+- 用 `extract_entities_prompt`，输入：全部 L1 briefs 拼接
+- 产出：分类（角色/地点/道具/组织/体系）的实体表，含推荐 slug + 重要度
+- 用户审核并勾选「必建 + 建议建」的条目；「可选」按需
+
+**6. 生成实体档案**
+- 角色：对每个角色跑 `Character_Import_Prompt_v2`，`{content}` 填该角色出场章节的原文合集
+- 其他实体：对每个跑 `import_entity_prompt`，`{source_text}` 填相关章节原文合集，按类型填 `entity_type` + `entity_type_constraints` + `entity_type_state_fields`
+- 产出：`entities/characters/*.md` / `entities/locations/*.md` / 等
+
+**7. 回填 volume/arc/chunk 边界**
+- agent 根据全部 L1 briefs 识别情节节奏，按 `chunk 3-5 章 / arc 10-30 章 / volume 按 metadata 的「单卷章数」` 重新划分
+- 在 `blueprints/chapters.md` 中为每一章标注 `volume/arc/chunk`（已写的 N 章产出"回溯型 blueprint"，每章仅保留章号 + 标题 + 一句话定位 + 归属标注）
+- 若章节分卷结果与第 1 步不一致，移动 `chapter-NNNN.md` 到对应 `chapters/volume-NNN/`
+
+**8. 生成 naming.md**
+- 用 `compile_naming_prompt`，输入：story-bible + character-dynamics（本步无，可用 story-bible §五 主要角色锚点代替）+ world-building（同上，用 story-bible §三 替代）+ golden-finger（网文模式才有）
+- 扫正文补充口语化变体到「禁用变体」列
+
+**9. 反向填充 canon（必须全量）**
+- 用 `canon_backfill_prompt`，输入：全部 L1 briefs + 关键原文段 + naming.md 的 slug 列表
+- 产出四份：`canon/facts.jsonl` / `promises.jsonl` / `progression.jsonl` / `timeline.md`
+- 按 chapter 字段升序排列；FACT/PROMISE/PROG 的 ID 从 0001 顺序分配
+- `canon/rules.md` 由 agent 从 story-bible §三 世界观规则复制 + 扫正文补充
+
+**10. 生成伏笔账本与副线账本**
+- 对每章依次跑 `extract_foreshadowing_prompt`（已有，单章版），`{active_foreshadowing}` 槽位使用前序已提取的条目累积
+- 按章推进填充 `foreshadowing-ledger.md`；对"埋设了但从未回收"的条目，status 设为「待回收」
+- `subplots.md` 同理：agent 通读 L1 briefs 识别贯穿多章的副线，按副线最后推进章填「最后推进」列
+
+**11. 生成 L2/L3/L4/L5（至少覆盖最近 1 卷）**
+- 优先级：当前卷（最新 chunk 的 L2 + 最新 arc 的 L3）> 当前卷全部 L2/L3 > 过往卷 L4 > 过往卷 L2/L3
+- 若 token 受限，只回填最近 1 卷的 L2/L3 + 最新一份 L4 + 当前 L5 即可；早期章节依靠 L1 + 关键词反查
+- L5 用 `global_summary_prompt`，`{volume_summaries}` 填已生成的所有 L4（至少最近一份）
+
+**12. 为 N+1 章起生成 blueprint**
+- 用 `chunked_chapter_blueprint_prompt_v2`
+- `{chapter_list}` 填前 N 章的回溯型 blueprint（第 7 步产出）
+- `{n}`=N+1, `{m}`=N+50
+- `{novel_architecture}` 填 story-bible 全文（本场景无独立 plot-architecture.md）
+- 产出的 blueprint 追加到 `blueprints/chapters.md`
+
+**13. 首次快照**
+- 在导入完成后立即执行一次快照（见 `memory-protocol.md §九`），目录名 `snapshots/ch-NNNN-imported/`
+- `snapshot-meta.md` 标注「来源：从既有作品导入」
+
+完成上述 13 步后，从第 N+1 章起走正常「写前组装 → 写后校验 → 落盘」流程。
+
+**退化路径**：若用户的作品 ≤10 章，可跳过第 7/11 步的 L2/L3/L4 回填，`layered_summary` 直接用 story-bible 全文 + 全部 L1；第 12 步的 blueprint 用 `chapter_blueprint_prompt_v2` 单批生成。
+
+**已有 SKILL 结构但旧版**（如早期扁平结构）：按 `memory-protocol.md §七` 兼容处理——保留旧文件，从下一个 chunk 起按本协议建新结构，L5 在下次卷收尾统一重生成。
+
 ## 文件内容规范
 
 ### `metadata.md`
