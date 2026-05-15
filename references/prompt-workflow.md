@@ -84,6 +84,9 @@
 | `{target_chapters}` | `metadata.md` 的「目标字数 ÷ 单章字数」计算得出 |
 | `{number_of_chapters}` | 同 `{target_chapters}` |
 | `{word_number}` | `metadata.md` 的「单章字数」字段 |
+| `{word_min}` | `floor(单章字数 × (1 − 字数容差))`，`字数容差` 缺省 0.15 |
+| `{word_max}` | `ceil(单章字数 × (1 + 字数容差))`，`字数容差` 缺省 0.15 |
+| `{current_length}` | 章节正文字符数（含中文标点，不含空白与换行）：`tr -d '[:space:]' < chapter.md \| wc -m` |
 | `{user_guidance}` | 用户本轮对话中的额外指导（无则填空）|
 
 ## 体裁模式槽位填充规则
@@ -146,9 +149,15 @@
 
 ### 阶段 B：写后校验
 
-按 `memory-protocol.md` §5 的 8 项清单检查，使用 `consistency-check-prompt.md`。校验输入 = 本章正文 + 阶段 A 的所有草稿 + 历史 canon/实体/naming。
+按 `memory-protocol.md` §5 的「前置字数门 + 8 项语义」清单检查，使用 `consistency-check-prompt.md`。校验输入 = 本章正文 + 阶段 A 的所有草稿 + 历史 canon/实体/naming + 字数门参数 `{word_number} / {word_min} / {word_max} / {current_length}`。
 
-校验失败时走 **`fix_chapter_prompt`** 做局部修复（最多 2 次，修复后重跑阶段 A→B），严重问题回到章节正文生成步骤重写，无法修复则登记 `continuity-issues.md`。
+**字数门优先于语义校验**：
+- `current_length < word_min` → `enrich_prompt_v2`（最多 2 次）
+- `current_length > word_max` → `condense_prompt_v2`（最多 2 次）
+- 偏离超过目标 30% → 直接重写本章（回到第三步 `next_chapter_draft_prompt_v2`，把字数门报告塞进 `user_guidance`）
+- 字数门修复后必须重新跑 1–6 号语义校验
+
+语义校验失败时走 **`fix_chapter_prompt`** 做局部修复（最多 2 次，修复后重跑阶段 A→B），严重问题回到章节正文生成步骤重写，无法修复则登记 `continuity-issues.md`。
 
 ### 阶段 C：落盘
 
@@ -165,11 +174,21 @@
 
 **禁止用任何提示词做逐章覆盖式的全局摘要更新**——这是旧协议下的主要漂移源。
 
-## 扩写
+## 字数修订（扩写 / 缩写）
 
-使用 **`enrich_prompt_v2`**（v1 `enrich_prompt` 已废弃）。
+字数门由写后校验阶段 B 自动触发，修订对象是已生成的本章正文：
 
-v2 新增 `entity_constraints` 槽位，填入出场实体的硬约束段，防止扩写时引入新设定冲突。
+| 触发条件 | 使用提示词 | 输入 |
+|---|---|---|
+| `current_length < word_min` | `enrich_prompt_v2` | 正文 + `entity_constraints` + `current_length` + `[word_min, word_max]` |
+| `current_length > word_max` | `condense_prompt_v2` | 正文 + `current_length` + `[word_min, word_max]` |
+| 偏离超过目标的 30% | 直接重写（`next_chapter_draft_prompt_v2`） | 校验报告塞入 `user_guidance` |
+
+`enrich_prompt_v2` 与 `condense_prompt_v2` 都对称约束：不得引入新角色/道具/地点，不得改变事件结果与决策，不得违反硬约束，不得增删 canon 事实。差别在动作方向。
+
+修订后必须重新计字符数 + 重跑 1–6 号语义校验。最多 2 次扩缩，仍不达标则走重写。
+
+`metadata.md` 的 `字数容差` 字段控制区间宽度：网文建议 0.10–0.15，严肃文学建议 0.15–0.20，缺省 0.15。
 
 ## 知识库和检索
 

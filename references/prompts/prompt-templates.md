@@ -604,7 +604,7 @@
 ├── 悬念密度：{suspense_level}
 ├── 伏笔操作：{foreshadowing}
 ├── 本章简述：{chapter_summary}
-├── 字数要求：{word_number}字
+├── 字数要求：{word_number} 字（允许范围 {word_min}–{word_max}，必须落在此区间内）
 ├── 核心人物：{characters_involved}
 ├── 关键道具：{key_items}
 ├── 场景地点：{scene_location}
@@ -613,6 +613,12 @@
 体裁模式：{genre_mode}
 
 {genre_mode_instructions}
+
+⚠️ 字数硬约束（不可违反）：
+- 正文总字符数（含中文标点，不含空白与换行）必须落在 {word_min}–{word_max} 之间。
+- 接近上限时收束次要细节，接近下限时补充场景感官、心理活动或合理对话推进，禁止注水重复。
+- 不得为压缩字数而省略 blueprint 指定的伏笔操作或核心情节。
+- 写完后请在心中估算字符数；若估算超出区间，立即重组段落直至落入区间，再输出最终文本。
 
 格式要求：
 - 仅返回章节正文文本
@@ -656,7 +662,7 @@
 ├── 伏笔设计：{foreshadowing}
 ├── 转折程度：{plot_twist_level}
 ├── 章节简述：{chapter_summary}
-├── 字数要求：{word_number}字
+├── 字数要求：{word_number} 字（允许范围 {word_min}–{word_max}，必须落在此区间内）
 ├── 核心人物：{characters_involved}
 ├── 关键道具：{key_items}
 ├── 场景地点：{scene_location}
@@ -680,7 +686,13 @@
 - 不得重复 filtered_context 中标注的禁用桥段
 - 对话语气参考台词样本，但允许随角色成长自然演化
 
-依据以上所有设定，完成第 {novel_number} 章正文，字数要求 {word_number} 字。
+⚠️ 字数硬约束（不可违反）：
+- 正文总字符数（含中文标点，不含空白与换行）必须落在 {word_min}–{word_max} 之间。
+- 接近上限时收束次要细节、压缩过场段落；接近下限时补充感官细节、心理活动或合理对话推进，禁止注水重复。
+- 不得为凑字数引入 blueprint 之外的新情节，也不得为压缩字数遗漏「伏笔设计」「核心作用」要求的关键节点。
+- 写完后请在心中估算字符数；若估算超出区间，立即重组段落直至落入区间，再输出最终文本。
+
+依据以上所有设定，完成第 {novel_number} 章正文，正文总字符数必须落在 {word_min}–{word_max} 区间（目标 {word_number} 字）。
 确保与前章结尾段衔接流畅，为下一章目录留好铺垫。
 
 格式要求：
@@ -692,7 +704,8 @@
 ### enrich_prompt_v2
 
 ```text
-以下章节文本较短，请在保持剧情连贯的前提下进行扩写，使其更充实，接近 {word_number} 字左右。
+以下章节文本字符数为 {current_length}，低于目标区间 {word_min}–{word_max}（目标 {word_number} 字）。
+请在保持剧情连贯的前提下进行扩写，使最终字符数落在 {word_min}–{word_max} 区间内（建议接近 {word_number} 字）。
 
 原内容：
 {chapter_text}
@@ -703,8 +716,28 @@
 - 不得违反以下硬约束：
 {entity_constraints}
 - 扩写内容应为场景细节、感官描写、心理活动、对话展开，而非新情节
+- 字符数计数口径：含中文标点，不含空白与换行；扩写后请自检不超过 {word_max}
 
 仅给出扩写后的完整文本，不要解释任何内容。
+```
+
+### condense_prompt_v2
+
+```text
+以下章节文本字符数为 {current_length}，高于目标区间 {word_min}–{word_max}（目标 {word_number} 字）。
+请在保持剧情完整与节奏的前提下进行压缩，使最终字符数落在 {word_min}–{word_max} 区间内（建议接近 {word_number} 字）。
+
+原内容：
+{chapter_text}
+
+压缩约束（必须遵守）：
+- 不得删除 blueprint 指定的「核心作用」「伏笔操作」「章末钩子」涉及的关键节点
+- 不得删除已埋设伏笔、已设定承诺、已发生的境界/能力进阶等会进入 canon 的事实
+- 不得修改人物决策、事件结果、对话核心信息
+- 优先压缩：重复修辞、冗余环境描写、与本章主线无关的过场、可合并的内心独白
+- 字符数计数口径：含中文标点，不含空白与换行；压缩后请自检不低于 {word_min}
+
+仅给出压缩后的完整文本，不要解释任何内容。
 ```
 
 ### fix_chapter_prompt
@@ -1031,7 +1064,7 @@
 - 突破契机：{breakthrough_trigger}
 - 突破后首要用途：{first_use}（打谁/做什么）
 
-字数要求：{word_number}字
+字数要求：{word_number} 字（允许范围 {word_min}–{word_max}，必须落在此区间内）
 
 请生成境界突破章正文，遵循网文突破章四段式：
 
