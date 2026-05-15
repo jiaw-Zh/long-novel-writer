@@ -97,8 +97,8 @@ Use $skill-installer to install this skill from GitHub: https://github.com/jiaw-
 
 | 分支 | 说明 |
 |---|---|
-| `dev` | 主开发分支，记忆系统 + 提示词，无 CLI 工具依赖 |
-| `dev-tools` | 包含 `tools/lnw` CLI 工具（需 shell 权限 + jq），适合 Claude Code / Codex 环境 |
+| `dev` | 主开发分支，记忆系统 + 提示词，无 CLI 工具依赖。任何 OS / shell 环境都能跑 |
+| `dev-tools` | 在 dev 基础上叠加 `tools/lnw` CLI（bash + jq）。Linux / macOS / Git Bash / WSL 均可；PowerShell / cmd 不可，需切回 dev |
 | `main` | 稳定版（待 dev 验证后合入）|
 
 ## 项目结构
