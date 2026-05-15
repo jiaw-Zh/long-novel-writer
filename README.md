@@ -79,7 +79,17 @@ lnw stale-subplots          # 失踪副线列表
 lnw snapshot 50 --note "卷一收尾"
 ```
 
-依赖：`jq`（必须）、`yq`（可选）。有 shell 权限的环境（Kiro、Claude Code、Codex）可直接使用，无 shell 权限时退化为手工操作。
+**运行环境**
+
+| 环境 | 是否原生支持 | 说明 |
+|---|---|---|
+| Linux / macOS | ✅ 原生 | 装好 `jq` 直接跑 |
+| Windows + Git Bash | ✅ 推荐 | 装了 Git for Windows 就有 Git Bash，再装 `jq` 即可（`scoop install jq` 或 `choco install jq`）。在 Git Bash 终端调用 `lnw`，**不要在 PowerShell / cmd 调用** |
+| Windows + WSL | ✅ 推荐 | 在 WSL 里把 SKILL 当 Linux 用 |
+| Windows + PowerShell（无 Git Bash / WSL） | ❌ 不支持 | 脚本是 bash，PowerShell 不能直接执行；切换到 `dev` 分支即可，所有功能由 agent 手工完成 |
+
+依赖：`jq`（必须）、`yq` v4+（可选，用于 YAML frontmatter）。  
+详细安装与排错见 `tools/README.md`。
 
 ## 与向量数据库的对比
 
@@ -125,8 +135,8 @@ Use $skill-installer to install this skill from GitHub: https://github.com/jiaw-
 
 | 分支 | 说明 |
 |---|---|
-| `dev` | 主开发分支，记忆系统 + 提示词，无 CLI 工具依赖 |
-| `dev-tools` | 包含 `tools/lnw` CLI 工具（需 shell 权限 + jq），适合 Claude Code / Codex 环境 |
+| `dev` | 主开发分支，记忆系统 + 提示词，无 CLI 工具依赖。任何 OS / shell 环境都能跑 |
+| `dev-tools` | 在 dev 基础上叠加 `tools/lnw` CLI（bash + jq）。Linux / macOS / Git Bash / WSL 均可；PowerShell / cmd 不可，需切回 dev |
 | `main` | 稳定版（待 dev 验证后合入）|
 
 ## 项目结构
@@ -144,6 +154,7 @@ references/
     dev-prompt_default.yaml           # 从创意生成小说基础信息
     consistency-check-prompt.md       # 写后一致性校验提示词
 tools/                            # dev-tools 分支专有
+  README.md                       # CLI 安装、依赖、Windows 兼容性、排错
   lnw                             # CLI 入口
   lib/                            # 各子命令实现
 ```
