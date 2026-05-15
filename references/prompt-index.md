@@ -5,7 +5,7 @@
 文件：`references/prompts/consistency-check-prompt.md`
 
 用于章节落盘前的独立一致性校验，建议由独立 subagent 或新对话窗口执行。
-覆盖 8 项校验：正典冲突 / POV 知识边界 / 硬约束 / 进阶合法性 / 命名一致性 / 桥段重复+伏笔对齐 / 场景类型 + 情感打分 / 台词样本更新。
+覆盖：前置字数门 + 8 项语义校验（正典冲突 / POV 知识边界 / 硬约束 / 进阶合法性 / 命名一致性 / 桥段重复+伏笔对齐 / 场景类型 + 情感打分 / 台词样本更新）。字数门偏短调 `enrich_prompt_v2`，偏长调 `condense_prompt_v2`，严重偏离回到 `next_chapter_draft_prompt_v2` 重写。
 
 ## 中文提示词主文件
 
@@ -30,9 +30,10 @@
 - `chunked_chapter_blueprint_prompt_v2` — 分批生成章节目录（>100 章，带体裁模式，输出 volume/arc/chunk 归属）
 
 ### 章节正文类
-- `first_chapter_draft_prompt_v2` — 第一章正文（带体裁模式分支）
-- `next_chapter_draft_prompt_v2` — 后续章节正文（带 POV 知识边界、前期过渡规则）
-- `enrich_prompt_v2` — 扩写短章节（带一致性约束）
+- `first_chapter_draft_prompt_v2` — 第一章正文（带体裁模式分支，硬字数区间）
+- `next_chapter_draft_prompt_v2` — 后续章节正文（带 POV 知识边界、前期过渡规则、硬字数区间）
+- `enrich_prompt_v2` — 扩写偏短章节至 [word_min, word_max]（带一致性约束）
+- `condense_prompt_v2` — 缩写偏长章节至 [word_min, word_max]（带一致性约束）
 - `fix_chapter_prompt` — 校验失败后的局部修复
 
 ### 分层摘要类

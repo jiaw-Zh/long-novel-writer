@@ -52,10 +52,12 @@ LNW="/path/to/long-novel-writer/tools/lnw"
    - 单章正文只输出正文，除非用户要求分析或拆解。
 
 4. **章节落盘与记忆更新**
+4. **章节落盘与记忆更新**
    - 正文生成后先跑机械校验（零 LLM）：
+     - **字数门**：`tr -d '[:space:]' < chapter-NNNN.md | wc -m` 得到字符数，比对 `metadata.md` 的 `[word_min, word_max]` 区间（缺省容差 0.15）。偏短调 `enrich_prompt_v2`、偏长调 `condense_prompt_v2`、偏离 >30% 直接重写（最多 2 次扩缩，仍不达标走重写）。
      - `lnw check-naming <N>` — grep 禁用变体
      - `lnw check-progression <N>` — 境界单调性
-   - 再跑语义校验：按 `memory-protocol.md` §5 双 agent 校验清单。
+   - 再跑语义校验：按 `memory-protocol.md` §5 双 agent 校验清单（前置字数门 + 8 项语义）。
    - 通过后按固定顺序落盘：
      1. `chapter-NNNN.md`（L0 正文）
      2. `chapter-NNNN.brief.md`（L1，300-500 字，写完即冻结）
