@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# SessionStart hook for long-novel-writer
+# 在会话启动时注入核心规则到 agent 上下文
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PLUGIN_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
+# 读取精简核心规则（不是完整 SKILL.md，太大）
+rules_content=$(cat "${PLUGIN_ROOT}/core-rules.md" 2>&1 || echo "Error reading core-rules.md")
+
+# JSON 转义
+escape_for_json() {
+    local s="$1"
+    s="${s//\\/\\\\}"
+    s="${s//\"/\\\"}"
+    s="${s//$'\n'/\\n}"
+    s="${s//$'\r'/\\r}"
+    s="${s//$'\t'/\\t}"
+    printf '%s' "$s"
+}
+
+escaped=$(escape_for_json "$rules_content")
+session_context="<EXTREMELY_IMPORTANT>\n**long-novel-writer 核心规则 — 使用此技能时必须遵守：**\n\n${escaped}\n</EXTREMELY_IMPORTANT>"
+
+# 输出平台特定 JSON
+if [ -n "${CURSOR_PLUGIN_ROOT:-}" ]; then
+  printf '{\n  "additional_context": "%s"\n}\n' "$session_context"
+elif [ -n "${CLAUDE_PLUGIN_ROOT:-}" ] && [ -z "${COPILOT_CLI:-}" ]; then
+  printf '{\n  "hookSpecificOutput": {\n    "hookEventName": "SessionStart",\n    "additionalContext": "%s"\n  }\n}\n' "$session_context"
+else
+  printf '{\n  "additionalContext": "%s"\n}\n' "$session_context"
+fi
+
+exit 0
