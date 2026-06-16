@@ -1,13 +1,8 @@
 # 提示词工作流
 
-## 体裁模式
+## 默认网文创作规范
 
-本项目固定使用 `网文` 模式，所有 v2 提示词的 `{genre_mode_instructions}` / `{genre_rhythm_rules}` / `{genre_constraints}` 槽位均填入对应的网文常量：
-- `{genre_mode}` -> `"网文"`
-- `{genre_mode_instructions}` -> `GENRE_MODE_WEBNOVEL`
-- `{genre_rhythm_rules}` -> `GENRE_RHYTHM_WEBNOVEL`
-- `{genre_constraints}` -> `GENRE_CONSTRAINTS_WEBNOVEL`
-- `{genre_import_constraints}` -> `GENRE_IMPORT_CONSTRAINTS_WEBNOVEL`
+本项目默认且固定使用网络小说（网文）创作规范与模板，内置了网文模式的写作约束、节奏规则及实体属性结构，无需额外指定或传入体裁模式参数。
 
 ## 网文专用提示词使用时机
 
@@ -70,13 +65,13 @@
 | 槽位 | 数据源 |
 |---|---|
 | `{novel_architecture}` | `settings/plot-architecture.md` 全文 |
-| `{novel_setting}` | `story-bible.md` 全文 + `metadata.md` 的「类型/基调/目标读者/单章字数/体裁模式」字段拼接 |
+| `{novel_setting}` | `story-bible.md` 全文 + `metadata.md` 的「类型/基调/目标读者/单章字数」字段拼接 |
 | `{core_seed}` | `settings/core-seed.md` 全文 |
 | `{character_dynamics}` | `settings/character-dynamics.md` 全文 |
 | `{world_building}` | `settings/world-building.md` 全文 |
 | `{initial_situation}` | 从 `settings/character-dynamics.md` 中主角的「初始状态」提取 |
 | `{core_goal}` | 从 `settings/core-seed.md` 中主角的「关键行动」或终局目标提取 |
-| `{golden_finger}` | `settings/golden-finger.md` 全文（网文模式）；非网文模式填「不适用」 |
+| `{golden_finger}` | `settings/golden-finger.md` 全文 |
 | `{genre}` | `metadata.md` 的「类型」字段 |
 | `{target_chapters}` | `metadata.md` 的「目标字数 ÷ 单章字数」计算得出 |
 | `{number_of_chapters}` | 同 `{target_chapters}` |
@@ -86,23 +81,7 @@
 | `{current_length}` | 章节正文字符数（含中文标点，不含空白与换行）：`tr -d '[:space:]' < chapter.md \| wc -m` |
 | `{user_guidance}` | 用户本轮对话中的额外指导（无则填空）|
 
-## 体裁模式槽位填充规则
-
-所有带体裁模式的 prompt 中，槽位填充方式标准化如下：
-
-| 槽位 | 填什么 | 示例 |
-|---|---|---|
-| `{genre_mode}` | **标签字符串** | `网文` |
-| `{genre_mode_instructions}` | **完整常量文本** | `GENRE_MODE_WEBNOVEL` |
-| `{genre_constraints}` | **完整常量文本** | `GENRE_CONSTRAINTS_WEBNOVEL` |
-| `{genre_rhythm_rules}` | **完整常量文本** | `GENRE_RHYTHM_WEBNOVEL` |
-| `{genre_import_constraints}` | **完整常量文本** | `GENRE_IMPORT_CONSTRAINTS_WEBNOVEL` |
-
-**原则**：带 `_instructions` / `_constraints` / `_rules` 后缀的槽位填常量全文，仅带 `_mode` 后缀的槽位填标签字符串。固定使用网文模式。
-
 ---
-
-
 
 第一章使用 **`first_chapter_draft_prompt_v2`**。后续章节使用 **`next_chapter_draft_prompt_v2`**。v1 已从 prompt 文件中移除。
 
@@ -120,7 +99,7 @@
 | 当前/下章章节信息 | 章节 blueprint |
 | `filtered_context` | `chapter-*.index.md` 关键词反查命中的 L1 + 活跃伏笔 + `continuity-issues.md` 禁用桥段 |
 
-`first_chapter_draft_prompt_v2` 的 `novel_setting` 槽位 = `story-bible.md` 全文 + `metadata.md` 的「类型/基调/目标读者/单章字数/体裁模式」字段拼接。`entity_states` 同上。
+`first_chapter_draft_prompt_v2` 的 `novel_setting` 槽位 = `story-bible.md` 全文 + `metadata.md` 的「类型/基调/目标读者/单章字数」字段拼接。`entity_states` 同上。
 
 有 shell 权限时，`lnw assemble-context <N>` 自动完成上述所有槽位的文件读取和拼接。
 

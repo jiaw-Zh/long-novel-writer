@@ -20,17 +20,17 @@
 - `compile_naming_prompt` — 从设定提取实体名并生成 naming.md 初始内容（含 slug 规则）
 
 ### 实体档案类
-- `create_character_state_prompt_v2` — 生成角色档案（对齐 entities/characters 结构，带体裁模式）
+- `create_character_state_prompt_v2` — 生成角色档案（对齐 entities/characters 结构）
 - `create_entity_prompt` — 生成非角色实体档案（locations/items/organizations/systems 通用）
 - `Character_Import_Prompt_v2` — 从外部文本导入角色档案
 - `update_character_state_prompt_v2` — 更新角色档案：当前状态 + 变更记录
 
 ### 章节目录类
-- `chapter_blueprint_prompt_v2` — 整本章节目录（≤100 章，带体裁模式）
-- `chunked_chapter_blueprint_prompt_v2` — 分批生成章节目录（>100 章，带体裁模式，输出 volume/arc/chunk 归属）
+- `chapter_blueprint_prompt_v2` — 整本章节目录（≤100 章）
+- `chunked_chapter_blueprint_prompt_v2` — 分批生成章节目录（>100 章，输出 volume/arc/chunk 归属）
 
 ### 章节正文类
-- `first_chapter_draft_prompt_v2` — 第一章正文（带体裁模式分支，硬字数区间）
+- `first_chapter_draft_prompt_v2` — 第一章正文（硬字数区间）
 - `next_chapter_draft_prompt_v2` — 后续章节正文（带 POV 知识边界、前期过渡规则、硬字数区间）
 - `enrich_prompt_v2` — 扩写偏短章节至 [word_min, word_max]（带一致性约束）
 - `condense_prompt_v2` — 缩写偏长章节至 [word_min, word_max]（带一致性约束）
@@ -64,7 +64,7 @@
 - `face_slap_prompt` — 打脸循环三段式（被低估/冲突爆发/收尾）
 - `progression_breakthrough_prompt` — 境界突破章四段式（蓄力/突破/确认/打脸）
 
-### 体裁模式常量 (仅支持网文)
+### 网文写作与规则常量
 - `GENRE_MODE_WEBNOVEL` — 单章写作约束
 - `GENRE_CONSTRAINTS_WEBNOVEL` — 角色硬约束字段
 - `GENRE_RHYTHM_WEBNOVEL` — 章节目录节奏规则
