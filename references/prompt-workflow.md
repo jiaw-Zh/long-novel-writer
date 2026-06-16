@@ -14,6 +14,14 @@
 | `face_slap_prompt` | blueprint 中标注「打脸章」时，正文生成前调用 |
 | `progression_breakthrough_prompt` | blueprint 中标注「突破章」时，正文生成前调用 |
 
+## 文笔质量管控提示词使用时机
+
+| 提示词 | 使用时机 |
+|---|---|
+| `quality-check-prompt` | 每章正文生成后，阶段 B3，与一致性校验并行或顺序执行 |
+| `polish-chapter-prompt` | 文笔质量校验评分 <49 时调用，最多 2 次 |
+| `anti-ai-phrases.md` | 作为 quality-check-prompt 和 draft prompt 的参考词典 |
+
 
 
 使用 dev 分支 `dev-prompt_default.yaml`：
@@ -123,15 +131,25 @@
 
 ### 阶段 B：写后校验
 
-按 `memory-protocol.md` §5 的「前置字数门 + 8 项语义」清单检查，使用 `consistency-check-prompt.md`。校验输入 = 本章正文 + 阶段 A 的所有草稿 + 历史 canon/实体/naming + 字数门参数 `{word_number} / {word_min} / {word_max} / {current_length}`。
+分为 B1-B4 四步依次执行：
 
-**字数门优先于语义校验**：
+**B1. 字数门（机械检查，最先执行）**：
 - `current_length < word_min` → `enrich_prompt_v2`（最多 2 次）
 - `current_length > word_max` → `condense_prompt_v2`（最多 2 次）
-- 偏离超过目标 30% → 直接重写本章（回到第三步 `next_chapter_draft_prompt_v2`，把字数门报告塞进 `user_guidance`）
-- 字数门修复后必须重新跑 1–6 号语义校验
+- 偏离超过目标 30% → 直接重写本章（回到 `next_chapter_draft_prompt_v2`，把字数门报告塞进 `user_guidance`）
+- 字数门修复后必须重新跑 B2
 
-语义校验失败时走 **`fix_chapter_prompt`** 做局部修复（最多 2 次，修复后重跑阶段 A→B），严重问题回到章节正文生成步骤重写，无法修复则登记 `continuity-issues.md`。
+**B2. 一致性校验**：
+按 `memory-protocol.md` §5 的「8 项语义」清单检查，使用 `consistency-check-prompt.md`。校验输入 = 本章正文 + 阶段 A 的所有草稿 + 历史 canon/实体/naming。
+语义校验失败时走 `fix_chapter_prompt` 做局部修复（最多 2 次，修复后重跑阶段 A→B2），严重问题回到章节正文生成步骤重写，无法修复则登记 `continuity-issues.md`。
+
+**B3. 文笔质量校验（新增）**：
+使用 `quality-check-prompt.md`，7 维度各 10 分，总分 70 分。校验输入 = 本章正文 + 出场角色台词样本 + `anti-ai-phrases.md` 黑名单。
+- 总分 ≥49 → 通过
+- 总分 35-48 → 走 `polish-chapter-prompt.md` 局部润色（最多 2 次，润色后重跑 B3，不需要重跑 B1/B2）
+- 总分 <35 → 走 `polish-chapter-prompt.md` 润色（最多 2 次），仍不达标则回到正文生成步骤重写
+
+**B4. 综合判定**：B1 + B2 + B3 全部通过后方可进入阶段 C 落盘。
 
 ### 阶段 C：落盘
 

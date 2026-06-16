@@ -7,6 +7,21 @@
 用于章节落盘前的独立一致性校验，建议由独立 subagent 或新对话窗口执行。
 覆盖：前置字数门 + 8 项语义校验（正典冲突 / POV 知识边界 / 硬约束 / 进阶合法性 / 命名一致性 / 桥段重复+伏笔对齐 / 场景类型 + 情感打分 / 台词样本更新）。字数门偏短调 `enrich_prompt_v2`，偏长调 `condense_prompt_v2`，严重偏离回到 `next_chapter_draft_prompt_v2` 重写。
 
+## 文笔质量校验提示词
+
+文件：`references/prompts/quality-check-prompt.md`
+
+用于章节落盘前的文笔质量评分（阶段 B3），7 维度各 10 分，总分 70 分。
+评分 ≥49 通过；35-48 走 `polish_chapter_prompt` 局部润色；<35 润色后仍不达标则重写。
+
+文件：`references/prompts/polish-chapter-prompt.md`
+
+文笔质量校验不达标时的局部润色提示词，最多调用 2 次。
+
+参考文件：`references/anti-ai-phrases.md`
+
+网文 AI 废话黑名单，供 `quality_check_prompt` 和正文生成 prompt 参考。
+
 ## 中文提示词主文件
 
 文件：`references/prompts/prompt-templates.md`
@@ -63,6 +78,11 @@
 - `chapter_hook_prompt` — 章末钩子（10 种模式，避免重复）
 - `face_slap_prompt` — 打脸循环三段式（被低估/冲突爆发/收尾）
 - `progression_breakthrough_prompt` — 境界突破章四段式（蓄力/突破/确认/打脸）
+
+### 文笔质量管控
+- `quality_check_prompt` — 文笔质量校验，7 维度 10 分制评分（阶段 B3）
+- `polish_chapter_prompt` — 文笔局部润色（质量评分不达标时调用，最多 2 次）
+- `anti-ai-phrases.md` — 网文 AI 废话黑名单参考文件
 
 ### 网文写作与规则常量
 - `GENRE_MODE_WEBNOVEL` — 单章写作约束

@@ -144,7 +144,7 @@ canon 账本**不进写前上下文**（体量随章节数线性增长）。只�
 - **arc 内 chunk 反查**：生成 L3 时需要拼接该 arc 内所有 L2。方法：在 `blueprints/chapters.md` 中找出所有 `arc=NNN` 的章节，提取其中出现的不重复 chunk 编号，读取对应 `chunks/chunk-NNNN.md` 文件。volume 内 arc 反查同理。
 - **ID 分配（FACT / PROMISE / PROG / F / SUB）**：agent 手工分配时，先 grep 对应文件的最大 ID，在其基础上 +1。有 `lnw` 工具时使用 `lnw next-id <type>`。
 - **实体档案「关键节点」追加**：由 agent 在落盘步骤 9 中根据本章正文手工添加一行 `- 第 N 章：<事件简述>`。「变更记录」段由 `update_character_state_prompt_v2` 输出负责。
-- **`novel_setting` 槽位的数据源**：`story-bible.md` 全文 + `metadata.md` 的「类型/基调/目标读者/单章字数/体裁模式」字段拼接。
+- **`novel_setting` 槽位的数据源**：`story-bible.md` 全文 + `metadata.md` 的「类型/基调/目标读者/单章字数」字段拼接。
 
 ## 五、写后校验与落盘顺序
 
