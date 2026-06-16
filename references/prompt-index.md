@@ -64,11 +64,11 @@
 - `face_slap_prompt` — 打脸循环三段式（被低估/冲突爆发/收尾）
 - `progression_breakthrough_prompt` — 境界突破章四段式（蓄力/突破/确认/打脸）
 
-### 体裁模式常量
-- `GENRE_MODE_LITERARY` / `GENRE_MODE_WEBNOVEL` / `GENRE_MODE_GENERAL` — 单章写作约束
-- `GENRE_CONSTRAINTS_LITERARY` / `GENRE_CONSTRAINTS_WEBNOVEL` / `GENRE_CONSTRAINTS_GENERAL` — 角色硬约束字段
-- `GENRE_RHYTHM_LITERARY` / `GENRE_RHYTHM_WEBNOVEL` / `GENRE_RHYTHM_GENERAL` — 章节目录节奏规则
-- `GENRE_IMPORT_CONSTRAINTS_LITERARY` / `GENRE_IMPORT_CONSTRAINTS_WEBNOVEL` — 角色导入约束
+### 体裁模式常量 (仅支持网文)
+- `GENRE_MODE_WEBNOVEL` — 单章写作约束
+- `GENRE_CONSTRAINTS_WEBNOVEL` — 角色硬约束字段
+- `GENRE_RHYTHM_WEBNOVEL` — 章节目录节奏规则
+- `GENRE_IMPORT_CONSTRAINTS_WEBNOVEL` — 角色导入约束
 
 ### 实体类型常量（填入 create_entity_prompt）
 - `ENTITY_CONSTRAINTS_LOCATIONS` / `ENTITY_STATE_LOCATIONS`

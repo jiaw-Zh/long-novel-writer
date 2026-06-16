@@ -2,15 +2,12 @@
 
 ## 体裁模式
 
-`metadata.md` 的 `体裁模式` 字段决定提示词的写作约束分支：
-
-| 体裁模式 | 适用场景 | 写作约束常量 |
-|---|---|---|
-| `网文` | 爽文/修真/都市/系统流 | `GENRE_MODE_WEBNOVEL`、`GENRE_RHYTHM_WEBNOVEL`、`GENRE_CONSTRAINTS_WEBNOVEL` |
-| `严肃文学` | 纯文学/深度叙事 | `GENRE_MODE_LITERARY`、`GENRE_RHYTHM_LITERARY`、`GENRE_CONSTRAINTS_LITERARY` |
-| `通用` | 不确定时默认 | `GENRE_MODE_GENERAL`、`GENRE_RHYTHM_GENERAL`、`GENRE_CONSTRAINTS_GENERAL` |
-
-所有 v2 提示词的 `{genre_mode_instructions}` / `{genre_rhythm_rules}` / `{genre_constraints}` 槽位，根据 `metadata.md` 的体裁模式填入对应常量。
+本项目固定使用 `网文` 模式，所有 v2 提示词的 `{genre_mode_instructions}` / `{genre_rhythm_rules}` / `{genre_constraints}` 槽位均填入对应的网文常量：
+- `{genre_mode}` -> `"网文"`
+- `{genre_mode_instructions}` -> `GENRE_MODE_WEBNOVEL`
+- `{genre_rhythm_rules}` -> `GENRE_RHYTHM_WEBNOVEL`
+- `{genre_constraints}` -> `GENRE_CONSTRAINTS_WEBNOVEL`
+- `{genre_import_constraints}` -> `GENRE_IMPORT_CONSTRAINTS_WEBNOVEL`
 
 ## 网文专用提示词使用时机
 
@@ -95,15 +92,13 @@
 
 | 槽位 | 填什么 | 示例 |
 |---|---|---|
-| `{genre_mode}` | **标签字符串**（`"网文"` 或 `"严肃文学"` 或 `"通用"`）| `网文` |
-| `{genre_mode_instructions}` | **完整常量文本**（`GENRE_MODE_WEBNOVEL` 或 `GENRE_MODE_LITERARY`）| 常量内容全文 |
-| `{genre_constraints}` | **完整常量文本**（`GENRE_CONSTRAINTS_WEBNOVEL` 等）| 常量内容全文 |
-| `{genre_rhythm_rules}` | **完整常量文本**（`GENRE_RHYTHM_WEBNOVEL` 等）| 常量内容全文 |
-| `{genre_import_constraints}` | **完整常量文本**（`GENRE_IMPORT_CONSTRAINTS_WEBNOVEL` 等）| 常量内容全文 |
+| `{genre_mode}` | **标签字符串** | `网文` |
+| `{genre_mode_instructions}` | **完整常量文本** | `GENRE_MODE_WEBNOVEL` |
+| `{genre_constraints}` | **完整常量文本** | `GENRE_CONSTRAINTS_WEBNOVEL` |
+| `{genre_rhythm_rules}` | **完整常量文本** | `GENRE_RHYTHM_WEBNOVEL` |
+| `{genre_import_constraints}` | **完整常量文本** | `GENRE_IMPORT_CONSTRAINTS_WEBNOVEL` |
 
-**原则**：带 `_instructions` / `_constraints` / `_rules` 后缀的槽位填常量全文，仅带 `_mode` 后缀的槽位填标签字符串。
-
-体裁模式从 `metadata.md` 的「体裁模式」字段读取。
+**原则**：带 `_instructions` / `_constraints` / `_rules` 后缀的槽位填常量全文，仅带 `_mode` 后缀的槽位填标签字符串。固定使用网文模式。
 
 ---
 
@@ -188,7 +183,7 @@
 
 修订后必须重新计字符数 + 重跑 1–6 号语义校验。最多 2 次扩缩，仍不达标则走重写。
 
-`metadata.md` 的 `字数容差` 字段控制区间宽度：网文建议 0.10–0.15，严肃文学建议 0.15–0.20，缺省 0.15。
+`metadata.md` 的 `字数容差` 字段控制区间宽度：网文建议 0.10–0.15，缺省 0.15。
 
 ## 知识库和检索
 

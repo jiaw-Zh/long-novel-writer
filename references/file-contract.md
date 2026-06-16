@@ -132,13 +132,13 @@ blueprint 标注章节归属时使用同样位数：`所属单元：volume=001 a
 **3. 实体档案**
 | 产出 | Prompt | 槽位填充 |
 |---|---|---|
-| `entities/characters/*.md` | `create_character_state_prompt_v2` | `genre_constraints` 按体裁填 `GENRE_CONSTRAINTS_*` |
+| `entities/characters/*.md` | `create_character_state_prompt_v2` | `genre_constraints` 填 `GENRE_CONSTRAINTS_WEBNOVEL` |
 | `entities/locations/*.md` | `create_entity_prompt` | `entity_type=locations`, `entity_type_constraints=ENTITY_CONSTRAINTS_LOCATIONS`, `entity_type_state_fields=ENTITY_STATE_LOCATIONS` |
 | `entities/items/*.md` | `create_entity_prompt` | `entity_type=items`, 对应 `ENTITY_CONSTRAINTS_ITEMS` / `ENTITY_STATE_ITEMS` |
 | `entities/organizations/*.md` | `create_entity_prompt` | `entity_type=organizations`, 对应 `ENTITY_CONSTRAINTS_ORGANIZATIONS` / `ENTITY_STATE_ORGANIZATIONS` |
 | `entities/systems/*.md` | `create_entity_prompt` | `entity_type=systems`, 对应 `ENTITY_CONSTRAINTS_SYSTEMS` / `ENTITY_STATE_SYSTEMS` |
 
-**4. 网文模式额外项**（体裁模式=网文 时）
+**4. 网文模式额外项**
 | 产出 | Prompt |
 |---|---|
 | `settings/golden-finger.md` | `golden_finger_design_prompt` |
@@ -255,14 +255,14 @@ blueprint 标注章节归属时使用同样位数：`所属单元：volume=001 a
 - 单章字数：
 - 字数容差：0.15            # 单章允许浮动比例，缺省 0.15（即 ±15%）
 - 单卷章数：
-- 体裁模式：网文 / 严肃文学 / 通用
+- 体裁模式：网文                  # 固定为网文模式
 - 禁用风格/桥段：
 ```
 
 **字数三参数语义**
 
 - `单章字数`（target）：单章目标字符数（中文 1 字 = 1 字符）。
-- `字数容差`（tol）：单章允许的浮动比例，建议网文 0.10–0.15、严肃文学 0.15–0.20。
+- `字数容差`（tol）：单章允许的浮动比例，建议网文 0.10–0.15。
 - 实际允许区间：`[target × (1 − tol), target × (1 + tol)]`，写后校验和扩写/缩写均按此区间判定。
 - 未填 `字数容差` 时按 0.15 处理，向 agent 说明「使用默认容差」。
 
