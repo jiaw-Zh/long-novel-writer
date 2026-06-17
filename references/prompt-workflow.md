@@ -140,7 +140,7 @@
 - 字数门修复后必须重新跑 B2
 
 **B2. 一致性校验**：
-按 `memory-protocol.md` §5 的「8 项语义」清单检查，使用 `consistency-check-prompt.md`。校验输入 = 本章正文 + 阶段 A 的所有草稿 + 历史 canon/实体/naming。
+按 `memory-protocol.md` §5 的「6 项语义」清单检查，使用 `consistency-check-prompt.md`。校验输入 = 本章正文 + 阶段 A 的所有草稿 + 历史 canon/实体/naming。
 语义校验失败时走 `fix_chapter_prompt` 做局部修复（最多 2 次，修复后重跑阶段 A→B2），严重问题回到章节正文生成步骤重写，无法修复则登记 `continuity-issues.md`。
 
 **B3. 文笔质量校验（新增）**：

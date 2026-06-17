@@ -159,16 +159,21 @@ BEFORE landing 任何文件:
      - NO → 修正命名
   7. 桥段重复 + 伏笔对齐 → 通过？
      - NO → 修正
-  8. ALL PASS → 执行 landing
+  8. 文笔质量校验（quality-check-prompt，7维度×10分，总分70）→ ≥49？
+     - NO, 35-48 → 走 polish-chapter-prompt 润色（最多 2 次）
+     - NO, <35 → 润色后仍不达标则重写
+  9. ALL PASS → 执行 landing
 ```
 
 #### 写后校验流程
 
 **必须**使用独立 subagent 或新对话窗口进行验证。自己验证自己的作品 = 无效验证。
 
-正文生成后先跑 `memory-protocol.md` §5「写后校验闭环」：
-- **Gate 0：字数门**（机械检查 `[word_min, word_max]`，偏短调 `enrich_prompt_v2`、偏长调 `condense_prompt_v2`、偏离 >30% 直接重写，最多 2 次扩缩写）
-- **Gate 1-6：语义检查**：正典冲突检测、POV 知识边界、硬约束违背、进阶单调度、命名一致性、桥段重复 + 伏笔账本对齐
+正文生成后按 `prompt-workflow.md` 的阶段 B（B1-B4）执行校验：
+- **B1 字数门**（机械检查 `[word_min, word_max]`，偏短调 `enrich_prompt_v2`、偏长调 `condense_prompt_v2`、偏离 >30% 直接重写，最多 2 次扩缩写）
+- **B2 一致性校验**（6 项语义检查）：正典冲突检测、POV 知识边界、硬约束违背、进阶合法性、命名一致性、桥段重复 + 伏笔对齐。使用 `consistency-check-prompt.md`，由独立 subagent 执行。
+- **B3 文笔质量校验**（7 维度×10 分，总分 70）：使用 `quality-check-prompt.md` + `anti-ai-phrases.md`。≥49 通过；35-48 走 `polish-chapter-prompt.md` 润色（最多 2 次）；<35 润色后仍不达标则重写。
+- **B4 综合判定**：B1 + B2 + B3 全部通过后方可执行 landing。
 
 #### 落盘顺序（13 步）
 
