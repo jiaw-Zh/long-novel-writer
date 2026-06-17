@@ -18,7 +18,7 @@
 
 | 提示词 | 使用时机 |
 |---|---|
-| `quality-check-prompt` | 每章正文生成后，阶段 B3，与一致性校验并行或顺序执行 |
+| `quality-check-prompt` | 每章正文生成后，阶段 B3，与一致性校验（B2）并行执行 |
 | `polish-chapter-prompt` | 文笔质量校验评分 <49 时调用，最多 2 次 |
 | `anti-ai-phrases.md` | 作为 quality-check-prompt 和 draft prompt 的参考词典 |
 
@@ -131,7 +131,7 @@
 
 ### 阶段 B：写后校验
 
-分为 B1-B4 四步依次执行：
+分为 B1-B4 四步执行，其中 B2 与 B3 可并行：
 
 **B1. 字数门（机械检查，最先执行）**：
 - `current_length < word_min` → `enrich_prompt_v2`（最多 2 次）
