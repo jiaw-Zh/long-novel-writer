@@ -76,8 +76,6 @@
 - `opening_three_chapters_prompt` — 开篇三章黄金结构（觉醒/小爽点/格局确立）
 - `golden_finger_design_prompt` — 金手指设计与节奏化使用规则
 - `chapter_hook_prompt` — 章末钩子（10 种模式，避免重复）
-- `face_slap_prompt` — 打脸循环三段式（被低估/冲突爆发/收尾）
-- `progression_breakthrough_prompt` — 境界突破章四段式（蓄力/突破/确认/打脸）
 
 ### 文笔质量管控
 - `quality_check_prompt` — 文笔质量校验，7 维度 10 分制评分（阶段 B3）

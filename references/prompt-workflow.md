@@ -11,8 +11,6 @@
 | `opening_three_chapters_prompt` | 立项后，写第1-3章之前，生成开局大纲 |
 | `golden_finger_design_prompt` | 立项时，与角色/世界观设定同步完成 |
 | `chapter_hook_prompt` | 每章正文写完后，检查/优化章末钩子 |
-| `face_slap_prompt` | blueprint 中标注「打脸章」时，正文生成前调用 |
-| `progression_breakthrough_prompt` | blueprint 中标注「突破章」时，正文生成前调用 |
 
 ## 文笔质量管控提示词使用时机
 
