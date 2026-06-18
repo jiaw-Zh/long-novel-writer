@@ -45,16 +45,42 @@ done
 
 # Step 3: Current + next chapter blueprints
 echo "[Step 3] 当前 + 下一章 blueprint"
-if [ -f "$NOVEL_DIR/blueprints/chapter-${CHAPTER_PAD}.md" ]; then
-  echo "  ✓ chapter-${CHAPTER_PAD} blueprint 存在"
-else
-  echo "  ✗ chapter-${CHAPTER_PAD} blueprint 缺失" && errors=$((errors + 1))
+bp_current_found=0
+if [ -f "$NOVEL_DIR/blueprints/chapters.md" ]; then
+  if grep -q -E "第[ 	]*${CHAPTER_NUM}[ 	]*章|Chapter[ 	]*${CHAPTER_NUM}|chapter-${CHAPTER_PAD}" "$NOVEL_DIR/blueprints/chapters.md" 2>/dev/null; then
+    bp_current_found=1
+    echo "  ✓ 在 blueprints/chapters.md 中找到第 ${CHAPTER_NUM} 章 blueprint"
+  fi
 fi
-next_pad=$(printf "%04d" "$((CHAPTER_NUM + 1))")
-if [ -f "$NOVEL_DIR/blueprints/chapter-${next_pad}.md" ]; then
-  echo "  ✓ chapter-${next_pad} blueprint 存在"
+if [ "$bp_current_found" -eq 0 ] && [ -f "$NOVEL_DIR/blueprints/chapter-${CHAPTER_PAD}.md" ]; then
+  bp_current_found=1
+  echo "  ✓ blueprints/chapter-${CHAPTER_PAD}.md 存在"
+fi
+
+if [ "$bp_current_found" -eq 1 ]; then
+  :
 else
-  echo "  ⚠ chapter-${next_pad} blueprint 缺失（可选）" && warnings=$((warnings + 1))
+  echo "  ✗ 第 ${CHAPTER_NUM} 章 blueprint 缺失" && errors=$((errors + 1))
+fi
+
+bp_next_found=0
+next_num=$((CHAPTER_NUM + 1))
+next_pad=$(printf "%04d" "$next_num")
+if [ -f "$NOVEL_DIR/blueprints/chapters.md" ]; then
+  if grep -q -E "第[ 	]*${next_num}[ 	]*章|Chapter[ 	]*${next_num}|chapter-${next_pad}" "$NOVEL_DIR/blueprints/chapters.md" 2>/dev/null; then
+    bp_next_found=1
+    echo "  ✓ 在 blueprints/chapters.md 中找到第 ${next_num} 章 blueprint"
+  fi
+fi
+if [ "$bp_next_found" -eq 0 ] && [ -f "$NOVEL_DIR/blueprints/chapter-${next_pad}.md" ]; then
+  bp_next_found=1
+  echo "  ✓ blueprints/chapter-${next_pad}.md 存在"
+fi
+
+if [ "$bp_next_found" -eq 1 ]; then
+  :
+else
+  echo "  ⚠ 第 ${next_num} 章 blueprint 缺失（可选）" && warnings=$((warnings + 1))
 fi
 
 # Step 4: Recent 3-5 chapter L1 briefs
