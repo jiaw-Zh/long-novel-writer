@@ -14,7 +14,7 @@ if [ ! -f "$FILE" ]; then
   exit 1
 fi
 
-COUNT=$(wc -m < "$FILE" | tr -d ' ')
+COUNT=$(tr -d '[:space:]' < "$FILE" | wc -m | tr -d ' ')
 MIN=$(python3 -c "import math; print(math.floor($TARGET * (1 - $TOL)))" 2>/dev/null || python -c "import math; print(math.floor($TARGET * (1 - $TOL)))")
 MAX=$(python3 -c "import math; print(math.ceil($TARGET * (1 + $TOL)))" 2>/dev/null || python -c "import math; print(math.ceil($TARGET * (1 + $TOL)))")
 
